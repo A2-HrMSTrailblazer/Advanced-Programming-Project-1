@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="se233.audioconverterapp1.controller.AudioConverterController">
+
+    <!-- Top: Title -->
+    <top>
+        <Label text="Audio Converter App"
+               style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-padding: 10;" />
+    </top>
+
+    <!-- Center: Table of Files -->
+    <center>
+        <VBox spacing="10" style="-fx-padding: 20;" alignment="CENTER">
+            <Label text="Dropped Files:"/>
+            <TableView fx:id="fileTable" prefHeight="300" prefWidth="600">
+                <columns>
+                    <TableColumn fx:id="fileNameColumn" text="File Name" prefWidth="300"/>
+                    <TableColumn fx:id="formatColumn" text="Format" prefWidth="100"/>
+                    <TableColumn fx:id="sizeColumn" text="Size (KB)" prefWidth="100"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </center>
+
+    <!-- Bottom: Controls -->
+    <bottom>
+        <VBox spacing="10" style="-fx-padding: 20;" alignment="CENTER">
+            <HBox spacing="20" alignment="CENTER">
+                <Label text="Output Format:"/>
+                <ChoiceBox fx:id="formatChoiceBox" prefWidth="150"/>
+            </HBox>
+            <HBox spacing="20" alignment="CENTER">
+                <Button fx:id="convertButton" text="Convert"/>
+                <Button fx:id="clearButton" text="Clear"/>
+            </HBox>
+        </VBox>
+    </bottom>
+
+</BorderPane>
