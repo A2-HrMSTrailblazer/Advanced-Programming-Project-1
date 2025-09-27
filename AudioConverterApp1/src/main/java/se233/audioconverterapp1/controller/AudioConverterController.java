@@ -1,9 +1,14 @@
 package se233.audioconverterapp1.controller;
 
+import java.io.File;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 
 public class AudioConverterController {
 
@@ -17,6 +22,7 @@ public class AudioConverterController {
     @FXML private ChoiceBox<String> formatChoiceBox;
     @FXML private Button convertButton;
     @FXML private Button clearButton;
+    @FXML private Label dropZone;
 
     private final ObservableList<FileInfo> fileData = FXCollections.observableArrayList();
 
@@ -35,8 +41,46 @@ public class AudioConverterController {
         formatChoiceBox.setValue("mp3");
 
         // Button actions
-        convertButton.setOnAction(e -> handleConvert());
-        clearButton.setOnAction(e -> handleClear());
+        convertButton.setOnAction(_ -> handleConvert());
+        clearButton.setOnAction(_ -> handleClear());
+
+        // Enable drag and drop
+        setupDragAndDrop();
+    }
+
+    private void setupDragAndDrop() {
+        dropZone.setOnDragOver(event -> {
+            if (event.getGestureSource() != dropZone && event.getDragboard().hasFiles()) {
+                event.acceptTransferModes(TransferMode.COPY);
+            }
+            event.consume();
+        });
+
+        dropZone.setOnDragDropped((DragEvent event) -> {
+            Dragboard db = event.getDragboard();
+            boolean success = false;
+            if (db.hasFiles()) {
+                for (File file : db.getFiles()) {
+                    if (isAudioFile(file)) {
+                        fileData.add(new FileInfo(file.getName(), getExtension(file), String.valueOf(file.length() / 1024)));
+                    }
+                }
+                success = true;
+            }
+            event.setDropCompleted(success);
+            event.consume();
+        });
+    }
+
+    private boolean isAudioFile(File file) {
+        String name = file.getName().toLowerCase();
+        return name.endsWith(".mp3") || name.endsWith(".wav") || name.endsWith(".m4a") || name.endsWith(".flac");
+    }
+
+    private String getExtension(File file) {
+        String name = file.getName();
+        int dot = name.lastIndexOf('.');
+        return (dot == -1) ? "" : name.substring(dot + 1);
     }
 
     private void handleConvert() {
