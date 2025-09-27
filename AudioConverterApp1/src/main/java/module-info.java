@@ -8,6 +8,8 @@ module se233.audioconverterapp1 {
 
     opens se233.audioconverterapp1 to javafx.fxml;
     opens se233.audioconverterapp1.controller to javafx.fxml;
+    opens se233.audioconverterapp1.model to javafx.fxml;
     exports se233.audioconverterapp1;
     exports se233.audioconverterapp1.controller;
+    exports se233.audioconverterapp1.model;
 }
