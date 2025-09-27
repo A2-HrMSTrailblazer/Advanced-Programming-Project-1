@@ -24,6 +24,7 @@
                     <TableColumn fx:id="formatColumn" text="Format" prefWidth="100" />
                     <TableColumn fx:id="sizeColumn" text="Size (KB)" prefWidth="100" />
                     <TableColumn fx:id="progressColumn" text="Progress" prefWidth="150" />
+                    <TableColumn fx:id="statusColumn" text="Status" prefWidth="120" />
                 </columns>
             </TableView>
         </VBox>
@@ -39,6 +40,7 @@
             <HBox spacing="20" alignment="CENTER">
                 <Button fx:id="convertButton" text="Convert"/>
                 <Button fx:id="clearButton" text="Clear"/>
+                <Button fx:id="cancelButton" text="Cancel" layoutX="450" layoutY="500" />
             </HBox>
             <!-- Global Progress -->
              <HBox spacing="10" alignment="CENTER">
