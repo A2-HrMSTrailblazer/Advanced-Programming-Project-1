@@ -2,10 +2,14 @@ package se233.audioconverterapp1.controller;
 
 import java.io.File;
 
+import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.ProgressBarTableCell;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
@@ -17,6 +21,7 @@ public class AudioConverterController {
     @FXML private TableColumn<FileInfo, String> fileNameColumn;
     @FXML private TableColumn<FileInfo, String> formatColumn;
     @FXML private TableColumn<FileInfo, String> sizeColumn;
+    @FXML private TableColumn<FileInfo, Double> progressColumn;
 
     // Controls
     @FXML private ChoiceBox<String> formatChoiceBox;
@@ -32,6 +37,10 @@ public class AudioConverterController {
         fileNameColumn.setCellValueFactory(cellData -> cellData.getValue().fileNameProperty());
         formatColumn.setCellValueFactory(cellData -> cellData.getValue().formatProperty());
         sizeColumn.setCellValueFactory(cellData -> cellData.getValue().sizeProperty());
+
+        // Progress bar cell
+        progressColumn.setCellValueFactory(cell -> cell.getValue().progressProperty().asObject());
+        progressColumn.setCellFactory(ProgressBarTableCell.forTableColumn());
 
         // Bind data
         fileTable.setItems(fileData);
@@ -88,7 +97,20 @@ public class AudioConverterController {
         if (fileData.isEmpty()) {
             showAlert("No files to convert!");
         } else {
-            showAlert("Pretend converting " + fileData.size() + " file(s) to " + outputFormat);
+            // progress simulation
+            for (FileInfo info : fileData) {
+                new Thread(() -> {
+                    for (int i = 1; i <= 100; i++) {
+                        try {
+                            Thread.sleep(30); // simulate work
+                        }
+                        catch (InterruptedException ignored) {}
+                        final double progress = i / 100.0;
+                        Platform.runLater(() -> info.setProgress(progress));
+                    }
+                }).start();
+            }
+            showAlert("Simulating conversion of " + fileData.size() + " files to " + outputFormat);
         }
     }
 
@@ -109,15 +131,20 @@ public class AudioConverterController {
         private final javafx.beans.property.SimpleStringProperty fileName;
         private final javafx.beans.property.SimpleStringProperty format;
         private final javafx.beans.property.SimpleStringProperty size;
+        private final DoubleProperty progress;
 
         public FileInfo(String fileName, String format, String size) {
             this.fileName = new javafx.beans.property.SimpleStringProperty(fileName);
             this.format = new javafx.beans.property.SimpleStringProperty(format);
             this.size = new javafx.beans.property.SimpleStringProperty(size);
+            this.progress = new SimpleDoubleProperty(0.0);
         }
 
         public javafx.beans.property.StringProperty fileNameProperty() { return fileName; }
         public javafx.beans.property.StringProperty formatProperty() { return format; }
         public javafx.beans.property.StringProperty sizeProperty() { return size; }
+        public DoubleProperty progressProperty() { return progress;}
+
+        public void setProgress(double value) { this.progress.set(value);}
     }
 }
