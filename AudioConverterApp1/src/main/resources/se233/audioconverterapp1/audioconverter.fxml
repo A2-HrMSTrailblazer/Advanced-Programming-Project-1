@@ -40,6 +40,11 @@
                 <Button fx:id="convertButton" text="Convert"/>
                 <Button fx:id="clearButton" text="Clear"/>
             </HBox>
+            <!-- Global Progress -->
+             <HBox spacing="10" alignment="CENTER">
+                <Label text="Overall Progress:" />
+                <ProgressBar fx:id="globalProgressBar" prefWidth="300" />
+             </HBox>
         </VBox>
     </bottom>
 
