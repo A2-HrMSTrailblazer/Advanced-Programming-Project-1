@@ -24,4 +24,9 @@ public class FileInfo {
     public DoubleProperty progressProperty() { return progress; }
 
     public void setProgress(double value) { this.progress.set(value); }
+
+    public void setStatus(String string) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setStatus'");
+    }
 }

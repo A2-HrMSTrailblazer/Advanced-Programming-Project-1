@@ -19,18 +19,28 @@ public class ConversionTask extends Task<Void> {
 
     @Override
     protected Void call() throws Exception {
-        fileInfo.fileNameProperty().set(fileInfo.fileNameProperty().get() + " → " + targetFormat);
         fileInfo.setProgress(0.0);
+        fileInfo.setStatus("Converting...");
 
-        // Simulate conversion (later replace with FFmpeg)
-        for (int i = 1; i <= 100; i++) {
-            if (isCancelled()) break; // allow cancellation
-            Thread.sleep(30); // simulate work
-            updateProgress(i, 100);
-            double currentProgress = (double) i / 100;
-            fileInfo.setProgress(currentProgress);
+        try {
+            for (int i = 1; i <= 100; i++) {
+                if (isCancelled()) {
+                    fileInfo.setStatus("Cancelled");
+                    break;
+                }
+                Thread.sleep(30);
+                updateProgress(i, 100);
+                fileInfo.setProgress(i / 100.0);
+            }
+
+            if(!isCancelled()) {
+                fileInfo.setStatus("Success");
+            }
         }
-
+        catch (Exception e){
+            fileInfo.setStatus("Failed");
+            throw e;
+        }
         return null;
     }
 }
