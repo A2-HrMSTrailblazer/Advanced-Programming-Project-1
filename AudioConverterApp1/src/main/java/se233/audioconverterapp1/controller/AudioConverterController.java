@@ -23,11 +23,13 @@ public class AudioConverterController {
     @FXML private TableColumn<FileInfo, String> formatColumn;
     @FXML private TableColumn<FileInfo, String> sizeColumn;
     @FXML private TableColumn<FileInfo, Double> progressColumn;
+    @FXML private TableColumn<FileInfo, String> statusColumn;
 
     // Controls
     @FXML private ChoiceBox<String> formatChoiceBox;
     @FXML private Button convertButton;
     @FXML private Button clearButton;
+    @FXML private Button cancelButton;
     @FXML private Label dropZone;
     @FXML private ProgressBar globalProgressBar;
 
@@ -41,6 +43,7 @@ public class AudioConverterController {
         fileNameColumn.setCellValueFactory(cell -> cell.getValue().fileNameProperty());
         formatColumn.setCellValueFactory(cell -> cell.getValue().formatProperty());
         sizeColumn.setCellValueFactory(cell -> cell.getValue().sizeProperty());
+        statusColumn.setCellValueFactory(cell -> cell.getValue().statusProperty());
 
         progressColumn.setCellValueFactory(cell -> cell.getValue().progressProperty().asObject());
         progressColumn.setCellFactory(ProgressBarTableCell.forTableColumn());
@@ -54,6 +57,7 @@ public class AudioConverterController {
         // Buttons
         convertButton.setOnAction(e -> handleConvert());
         clearButton.setOnAction(e -> handleClear());
+        cancelButton.setOnAction(_ -> handleCancel());
 
         // Drag & Drop
         setupDragAndDrop();
@@ -120,6 +124,12 @@ public class AudioConverterController {
         fileData.clear();
         globalProgressBar.setProgress(0);
         showAlert("File list cleared.");
+    }
+
+    private void handleCancel() {
+        conversionManager.cancelConversions();
+        updateGlobalProgress();
+        showAlert("Conversions cancelled.");
     }
 
     private void updateGlobalProgress() {

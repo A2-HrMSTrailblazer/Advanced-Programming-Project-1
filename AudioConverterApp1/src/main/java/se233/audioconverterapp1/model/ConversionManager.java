@@ -28,7 +28,7 @@ public class ConversionManager {
         }
     }
 
-    private void cancelConversions() {
+    public void cancelConversions() {
         for (ConversionTask task : activeTasks) {
             task.cancel();
         }
