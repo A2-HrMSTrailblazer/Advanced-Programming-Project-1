@@ -23,6 +23,7 @@
                     <TableColumn fx:id="fileNameColumn" text="File Name" prefWidth="300" />
                     <TableColumn fx:id="formatColumn" text="Format" prefWidth="100" />
                     <TableColumn fx:id="sizeColumn" text="Size (KB)" prefWidth="100" />
+                    <TableColumn fx:id="progressColumn" text="Progress" prefWidth="150" />
                 </columns>
             </TableView>
         </VBox>
