@@ -11,10 +11,10 @@
     <!-- Top: Title + Toolbar -->
     <top>
         <VBox spacing="8" style="-fx-padding: 12 16 0 16;">
-
-            <HBox alignment="CENTER_LEFT">
-                <Label text="Audio Converter App"
-                       styleClass="ui-title" />
+            <HBox alignment="CENTER_LEFT" spacing="10">
+            <Label text="Audio Converter App"
+                   styleClass="ui-title" />
+                <Label text="• Supported formats: MP3, WAV, M4A, FLAC" style="formats-tip"/>
             </HBox>
 
             <!-- Toolbar -->
@@ -23,8 +23,8 @@
                 <ChoiceBox fx:id="formatChoiceBox" prefWidth="120"/>
                 <Separator orientation="VERTICAL"/>
                 <Button fx:id="convertButton" text="Convert" styleClass="btn btn-primary"/>
-                <Button fx:id="cancelButton" text="Cancel" styleClass="btn btn-warning"/>
-                <Pane HBox.hgrow="ALWAYS"/>
+                <Button fx:id="cancelButton" text="Cancel   "/>
+                <Pane HBox.hgrow ="ALWAYS"/>
                 <Button fx:id="clearButton" text="Clear List" styleClass="btn btn-danger"/>
             </ToolBar>
         </VBox>
@@ -39,7 +39,7 @@
                        maxWidth="720" minHeight="140"
                        styleClass="dropzone">
                 <Label fx:id="dropZone"
-                       text="Drop your audio files here (double-click to browse)"
+                       text="Drop your audio files here"
                        styleClass="dropzone-text"/>
             </StackPane>
 
@@ -59,14 +59,24 @@
         </VBox>
     </center>
 
-    <!-- Bottom: Tip + Global Progress -->
     <bottom>
-        <VBox spacing="8" style="-fx-padding: 12 20 16 20;">
-            <HBox alignment="CENTER_LEFT">
-                <Label text="Supported formats: MP3, WAV, M4A, FLAC" styleClass="tip-text"/>
+        <!-- Center everything at the bottom -->
+        <VBox spacing="8"
+              alignment="CENTER"
+              fillWidth="false"
+              style="-fx-padding: 8 16 16 16;"
+              BorderPane.alignment="CENTER">
+
+            <!-- Overall -->
+            <HBox spacing="10" alignment="CENTER">
+                <Label text="Overall:"/>
+                <ProgressBar fx:id="overallProgress"
+                             prefWidth="560"
+                             progress="0.0"/>
+                <Label fx:id="overallProgressText" text=" "/>
             </HBox>
-            <ProgressBar fx:id="globalProgressBar" prefWidth="700"/>
         </VBox>
     </bottom>
+
 
 </BorderPane>

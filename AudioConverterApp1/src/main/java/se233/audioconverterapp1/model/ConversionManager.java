@@ -16,7 +16,7 @@ public class ConversionManager {
             ConversionTask task = new ConversionTask(info, outputFormat);
 
             // Update global progress after each progress update
-            task.progressProperty().addListener((obs, oldVal, newVal) ->
+            task.progressProperty().addListener((_, _, _) ->
                     Platform.runLater(onProgressUpdate)
             );
 

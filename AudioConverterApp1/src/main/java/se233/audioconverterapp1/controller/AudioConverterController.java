@@ -32,7 +32,7 @@ public class AudioConverterController {
     @FXML private Button clearButton;
     @FXML private Button cancelButton;
     @FXML private Label dropZone;
-    @FXML private ProgressBar globalProgressBar;
+    @FXML private ProgressBar overallProgress;
 
     // ==== Data + Manager ====
     private final ObservableList<FileInfo> fileData = FXCollections.observableArrayList();
@@ -45,7 +45,7 @@ public class AudioConverterController {
         setupFormatChoiceBox();
         setupButtons();
         setupFileImport();
-        globalProgressBar.setProgress(0);
+        overallProgress.setProgress(0);
     }
 
     // ---- Table setup ----
@@ -152,7 +152,7 @@ public class AudioConverterController {
 
     private void handleClear() {
         fileData.clear();
-        globalProgressBar.setProgress(0);
+        overallProgress.setProgress(0);
         showAlert("File list cleared.");
     }
 
@@ -164,11 +164,11 @@ public class AudioConverterController {
 
     private void updateGlobalProgress() {
         if (fileData.isEmpty()) {
-            globalProgressBar.setProgress(0);
+            overallProgress.setProgress(0);
             return;
         }
         double sum = fileData.stream().mapToDouble(f -> f.progressProperty().get()).sum();
-        globalProgressBar.setProgress(sum / fileData.size());
+        overallProgress.setProgress(sum / fileData.size());
     }
 
     // ---- Utility ----
