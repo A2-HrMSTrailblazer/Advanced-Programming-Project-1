@@ -58,8 +58,8 @@ public class AudioConverterController {
         formatChoiceBox.setValue("mp3");
 
         // Buttons
-        convertButton.setOnAction(e -> handleConvert());
-        clearButton.setOnAction(e -> handleClear());
+        convertButton.setOnAction(_ -> handleConvert());
+        clearButton.setOnAction(_ -> handleClear());
         cancelButton.setOnAction(_ -> handleCancel());
 
         // Drag & Drop
