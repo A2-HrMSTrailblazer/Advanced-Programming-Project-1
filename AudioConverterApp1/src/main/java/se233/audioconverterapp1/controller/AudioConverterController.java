@@ -8,11 +8,14 @@ import javafx.scene.control.cell.ProgressBarTableCell;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import se233.audioconverterapp1.model.ConversionManager;
 import se233.audioconverterapp1.model.FileInfo;
 
 import java.io.File;
 import java.text.NumberFormat;
+import java.util.List;
 import java.util.Locale;
 
 public class AudioConverterController {
@@ -88,6 +91,21 @@ public class AudioConverterController {
                 event.setDropCompleted(false);
             }
             event.consume();
+        });
+
+        dropZone.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Select Audio Files");
+                fileChooser.getExtensionFilters().add(new ExtensionFilter("Audio Files", "*.mp3", "*.wav", "*.m4a", "*.flac"));
+                List<File> selectedFiles = fileChooser.showOpenMultipleDialog(dropZone.getScene().getWindow());
+
+                if (selectedFiles != null) {
+                    selectedFiles.stream()
+                            .filter(this::isAudioFile)
+                            .forEach(file -> fileData.add(new FileInfo(file.getName(), getExtension(file), formatSize(file.length() / 1024))));
+                }
+            }
         });
     }
 
