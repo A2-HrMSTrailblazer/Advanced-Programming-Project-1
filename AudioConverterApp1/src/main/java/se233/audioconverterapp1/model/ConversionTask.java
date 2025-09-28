@@ -1,5 +1,9 @@
 package se233.audioconverterapp1.model;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStreamReader;
+
 import javafx.concurrent.Task;
 
 /**
@@ -22,7 +26,27 @@ public class ConversionTask extends Task<Void> {
         fileInfo.setProgress(0.0);
         fileInfo.setStatus("Converting...");
 
+        // Input file
+        String inputPath = fileInfo.getFilePath();
+        File inputFile = new File(inputPath);
+
+        // Output file
+        String baseName = inputFile.getName().replaceFirst("[.][^.]+$", "");
+        File outputFile = new File(inputFile.getParentFile(), baseName + "." + targetFormat);
+
         try {
+            String ffmpegPath = "C:\\Users\\M S I\\Downloads\\ffmpeg-8.0-essentials_build\\ffmpeg-8.0-essentials_build\\bin\\ffmpeg.exe";
+            ProcessBuilder pb = new ProcessBuilder(ffmpegPath, "-y", "-i", inputPath, outputFile.getAbsolutePath());
+            pb.redirectErrorStream(true);
+            Process process = pb.start();
+
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    System.out.println("[FFmpeg] " + line);
+                }
+            }
+
             for (int i = 1; i <= 100; i++) {
                 if (isCancelled()) {
                     fileInfo.setStatus("Cancelled");
@@ -33,8 +57,13 @@ public class ConversionTask extends Task<Void> {
                 fileInfo.setProgress(i / 100.0);
             }
 
-            if(!isCancelled()) {
+            int exitCode = process.waitFor();
+            if (exitCode == 0) {
                 fileInfo.setStatus("Success");
+                fileInfo.setProgress(1.0);
+            }
+            else {
+                fileInfo.setStatus("Failed");
             }
         }
         catch (Exception e){

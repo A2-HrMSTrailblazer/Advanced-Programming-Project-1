@@ -65,6 +65,9 @@ public class AudioConverterController {
         // Drag & Drop
         setupDragAndDrop();
 
+        // Double-click
+        doubleClick();
+
         globalProgressBar.setProgress(0);
     }
 
@@ -82,7 +85,7 @@ public class AudioConverterController {
                 db.getFiles().stream()
                         .filter(this::isAudioFile)
                         .forEach(file -> fileData.add(new FileInfo(
-                                file.getName(),
+                                file.getAbsolutePath(),
                                 getExtension(file),
                                 formatSize(file.length() / 1024)
                         )));
@@ -92,7 +95,9 @@ public class AudioConverterController {
             }
             event.consume();
         });
+    }
 
+    private void doubleClick() {
         dropZone.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 FileChooser fileChooser = new FileChooser();
@@ -103,7 +108,7 @@ public class AudioConverterController {
                 if (selectedFiles != null) {
                     selectedFiles.stream()
                             .filter(this::isAudioFile)
-                            .forEach(file -> fileData.add(new FileInfo(file.getName(), getExtension(file), formatSize(file.length() / 1024))));
+                            .forEach(file -> fileData.add(new FileInfo(file.getAbsolutePath(), getExtension(file), formatSize(file.length() / 1024))));
                 }
             }
         });
