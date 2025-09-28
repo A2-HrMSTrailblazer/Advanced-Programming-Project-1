@@ -60,10 +60,10 @@ public class AudioConverterController {
         // Buttons
         convertButton.setOnAction(e -> handleConvert());
         clearButton.setOnAction(e -> handleClear());
-        cancelButton.setOnAction(e -> handleCancel());
+        cancelButton.setOnAction(_ -> handleCancel());
 
-        // Drag & Drop + Double Click
-        setupFileImport();
+        // Drag & Drop
+        setupDragAndDrop();
 
         // Initialize progress bar
         globalProgressBar.setProgress(0);
@@ -83,15 +83,19 @@ public class AudioConverterController {
             if (db.hasFiles()) {
                 db.getFiles().stream()
                         .filter(this::isAudioFile)
-                        .forEach(this::addFileToTable);
+                        .forEach(file -> fileData.add(new FileInfo(
+                                file.getName(),
+                                getExtension(file),
+                                formatSize(file.length() / 1024)
+                        )));
                 event.setDropCompleted(true);
             } else {
                 event.setDropCompleted(false);
             }
             event.consume();
         });
+    }
 
-        // Double-click → file chooser
         dropZone.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 FileChooser fileChooser = new FileChooser();
@@ -104,7 +108,7 @@ public class AudioConverterController {
                 if (selectedFiles != null) {
                     selectedFiles.stream()
                             .filter(this::isAudioFile)
-                            .forEach(this::addFileToTable);
+                            .forEach(file -> fileData.add(new FileInfo(file.getName(), getExtension(file), formatSize(file.length() / 1024))));
                 }
             }
         });
