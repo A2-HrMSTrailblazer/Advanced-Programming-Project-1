@@ -3,6 +3,8 @@ package se233.audioconverterapp1.model;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.List;
 
 import javafx.concurrent.Task;
 
@@ -36,7 +38,18 @@ public class ConversionTask extends Task<Void> {
 
         try {
             String ffmpegPath = "C:\\Users\\M S I\\Downloads\\ffmpeg-8.0-essentials_build\\ffmpeg-8.0-essentials_build\\bin\\ffmpeg.exe";
-            ProcessBuilder pb = new ProcessBuilder(ffmpegPath, "-y", "-i", inputPath, outputFile.getAbsolutePath());
+            List<String> command;
+            if (targetFormat.equalsIgnoreCase("m4a")) {
+                command = Arrays.asList(
+                    ffmpegPath, "-y", "-i", inputPath, "-vn", "-c:a", "aac", outputFile.getAbsolutePath()
+                );
+            }
+            else {
+                command = Arrays.asList(
+                    ffmpegPath, "-y", "-i", inputPath, outputFile.getAbsolutePath()
+                );
+            }
+            ProcessBuilder pb = new ProcessBuilder(command);
             pb.redirectErrorStream(true);
             Process process = pb.start();
 

@@ -5,7 +5,6 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.ProgressBarTableCell;
-import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.stage.FileChooser;
@@ -20,7 +19,7 @@ import java.util.Locale;
 
 public class AudioConverterController {
 
-    // Table
+    // ==== UI Elements ====
     @FXML private TableView<FileInfo> fileTable;
     @FXML private TableColumn<FileInfo, String> fileNameColumn;
     @FXML private TableColumn<FileInfo, String> formatColumn;
@@ -28,7 +27,6 @@ public class AudioConverterController {
     @FXML private TableColumn<FileInfo, Double> progressColumn;
     @FXML private TableColumn<FileInfo, String> statusColumn;
 
-    // Controls
     @FXML private ChoiceBox<String> formatChoiceBox;
     @FXML private Button convertButton;
     @FXML private Button clearButton;
@@ -36,13 +34,22 @@ public class AudioConverterController {
     @FXML private Label dropZone;
     @FXML private ProgressBar globalProgressBar;
 
-    // Data + Manager
+    // ==== Data + Manager ====
     private final ObservableList<FileInfo> fileData = FXCollections.observableArrayList();
     private final ConversionManager conversionManager = new ConversionManager();
 
+    // ==== Initialization ====
     @FXML
     public void initialize() {
-        // Table bindings
+        setupTable();
+        setupFormatChoiceBox();
+        setupButtons();
+        setupFileImport();
+        globalProgressBar.setProgress(0);
+    }
+
+    // ---- Table setup ----
+    private void setupTable() {
         fileNameColumn.setCellValueFactory(cell -> cell.getValue().fileNameProperty());
         formatColumn.setCellValueFactory(cell -> cell.getValue().formatProperty());
         sizeColumn.setCellValueFactory(cell -> cell.getValue().sizeProperty());
@@ -52,23 +59,22 @@ public class AudioConverterController {
         progressColumn.setCellFactory(ProgressBarTableCell.forTableColumn());
 
         fileTable.setItems(fileData);
-
-        // Format choices
-        formatChoiceBox.setItems(FXCollections.observableArrayList("mp3", "wav", "m4a", "flac"));
-        formatChoiceBox.setValue("mp3");
-
-        // Buttons
-        convertButton.setOnAction(e -> handleConvert());
-        clearButton.setOnAction(e -> handleClear());
-        cancelButton.setOnAction(_ -> handleCancel());
-
-        // Drag & Drop
-        setupDragAndDrop();
-
-        // Initialize progress bar
-        globalProgressBar.setProgress(0);
     }
 
+    // ---- Format choices ----
+    private void setupFormatChoiceBox() {
+        formatChoiceBox.setItems(FXCollections.observableArrayList("mp3", "wav", "m4a", "flac"));
+        formatChoiceBox.setValue("mp3");
+    }
+
+    // ---- Buttons ----
+    private void setupButtons() {
+        convertButton.setOnAction(e -> handleConvert());
+        clearButton.setOnAction(e -> handleClear());
+        cancelButton.setOnAction(e -> handleCancel());
+    }
+
+    // ---- File import (drag & drop + double click) ----
     private void setupFileImport() {
         // Drag-and-drop
         dropZone.setOnDragOver(event -> {
@@ -78,24 +84,18 @@ public class AudioConverterController {
             event.consume();
         });
 
-        dropZone.setOnDragDropped((DragEvent event) -> {
+        dropZone.setOnDragDropped(event -> {
             Dragboard db = event.getDragboard();
             if (db.hasFiles()) {
-                db.getFiles().stream()
-                        .filter(this::isAudioFile)
-                        .forEach(file -> fileData.add(new FileInfo(
-                                file.getName(),
-                                getExtension(file),
-                                formatSize(file.length() / 1024)
-                        )));
+                db.getFiles().stream().filter(this::isAudioFile).forEach(this::addFileToTable);
                 event.setDropCompleted(true);
             } else {
                 event.setDropCompleted(false);
             }
             event.consume();
         });
-    }
 
+        // Double click = open file chooser
         dropZone.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 FileChooser fileChooser = new FileChooser();
@@ -104,19 +104,17 @@ public class AudioConverterController {
                         new ExtensionFilter("Audio Files", "*.mp3", "*.wav", "*.m4a", "*.flac")
                 );
                 List<File> selectedFiles = fileChooser.showOpenMultipleDialog(dropZone.getScene().getWindow());
-
                 if (selectedFiles != null) {
-                    selectedFiles.stream()
-                            .filter(this::isAudioFile)
-                            .forEach(file -> fileData.add(new FileInfo(file.getName(), getExtension(file), formatSize(file.length() / 1024))));
+                    selectedFiles.stream().filter(this::isAudioFile).forEach(this::addFileToTable);
                 }
             }
         });
     }
 
+    // ---- File handling helpers ----
     private void addFileToTable(File file) {
         fileData.add(new FileInfo(
-                file.getAbsolutePath(),  // full path for FFmpeg
+                file.getAbsolutePath(),   // full path (FFmpeg needs this)
                 getExtension(file),
                 formatSize(file.length() / 1024)
         ));
@@ -139,6 +137,7 @@ public class AudioConverterController {
         return nf.format(sizeKB) + " KB";
     }
 
+    // ---- Conversion handling ----
     private void handleConvert() {
         if (fileData.isEmpty()) {
             showAlert("No files to convert!");
@@ -172,6 +171,7 @@ public class AudioConverterController {
         globalProgressBar.setProgress(sum / fileData.size());
     }
 
+    // ---- Utility ----
     private void showAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setHeaderText(null);
