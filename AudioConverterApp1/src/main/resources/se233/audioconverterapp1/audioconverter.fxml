@@ -16,7 +16,7 @@
     <!-- Center: Drop Zone + Table -->
     <center>
         <VBox spacing="15" style="-fx-padding: 20;" alignment="CENTER">
-            <Label fx:id="dropZone" text="Drop your audio files here"
+            <Label fx:id="dropZone" text="Drop your audio files here or double-click to select files"
                    style="-fx-border-color: gray; -fx-border-style: dashed; fx-border-width: 2; -fx-padding: 40; -fx-font-size: 14px; -fx-text-fill: #666;" />
             <TableView fx:id="fileTable" prefHeight="300" prefWidth="600">
                 <columns>
