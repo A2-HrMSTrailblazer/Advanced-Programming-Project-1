@@ -4,10 +4,13 @@ module se233.audioconverterapp1 {
 
     // no explicit requires for ffmpeg; Maven/Java will treat it as automatic
     //requires slf4j.simple;  // logger backend
-    requires org.slf4j;     // slf4j API
+    requires org.slf4j;
+    requires javafx.graphics;     // slf4j API
 
     opens se233.audioconverterapp1 to javafx.fxml;
     opens se233.audioconverterapp1.controller to javafx.fxml;
+    opens se233.audioconverterapp1.model to javafx.fxml;
     exports se233.audioconverterapp1;
     exports se233.audioconverterapp1.controller;
+    exports se233.audioconverterapp1.model;
 }
