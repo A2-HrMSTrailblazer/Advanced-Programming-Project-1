@@ -1,0 +1,90 @@
+/* Base */
+.root {
+    -fx-font-family: "Inter", "Segoe UI", "SF Pro Text", "Tahoma", sans-serif;
+    -fx-font-size: 13px;
+}
+
+/* Title */
+.ui-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 16 0 16;
+}
+
+/* Toolbar */
+.topbar {
+    -fx-background-color: transparent;
+    -fx-padding: 8 16 8 16;
+}
+
+/* Buttons */
+.btn {
+    -fx-font-weight: semi-bold;
+    -fx-padding: 6 14 6 14;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+}
+
+.btn:hover {
+    -fx-opacity: 0.95;
+}
+
+.btn-primary {
+    -fx-background-color: #3b82f6;
+    -fx-text-fill: white;
+}
+
+.btn-primary:pressed {
+    -fx-background-color: #2563eb;
+}
+
+.btn-danger {
+    -fx-background-color: #ef4444;
+    -fx-text-fill: white;
+}
+
+.btn-danger:pressed {
+    -fx-background-color: #dc2626;
+}
+
+/* Dropzone */
+.dropzone {
+    -fx-background-color: #f5f7fb;
+    -fx-background-radius: 14;
+    -fx-border-color: #a8b3cf;
+    -fx-border-radius: 14;
+    -fx-border-style: segments(10, 8) line-cap round; /* เส้นประสวย ๆ */
+    -fx-border-width: 2;
+}
+
+.dropzone-text {
+    -fx-text-fill: #475569;
+    -fx-font-size: 14px;
+    -fx-padding: 18;
+}
+
+.dropzone:drag-over {
+    -fx-background-color: #e8f0ff;
+    -fx-border-color: #3b82f6;
+}
+
+/* Table */
+.table-view .column-header-background {
+    -fx-background-color: linear-gradient(to bottom, #eef2f7, #e6ebf2);
+}
+
+.table-view .column-header .label {
+    -fx-font-weight: bold;
+}
+
+.tip-text {
+    -fx-text-fill: #64748b;
+}
+.ui-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1f2937;
+    -fx-padding: 0 0 5 0;
+}
+
+

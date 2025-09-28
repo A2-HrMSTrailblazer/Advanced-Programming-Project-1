@@ -9,8 +9,10 @@ public class AudioConverterApp extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         FXMLLoader loader = new FXMLLoader(AudioConverterApp.class.getResource("audioconverter.fxml"));
+        Scene scene = new Scene(loader.load(), 800, 600);
+        scene.getStylesheets().add(AudioConverterApp.class.getResource("ui.css").toExternalForm());
         stage.setTitle("Audio Converter App");
-        stage.setScene(new Scene(loader.load(), 800, 600));
+        stage.setScene(scene);
         stage.show();
     }
 

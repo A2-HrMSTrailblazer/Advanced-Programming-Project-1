@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -7,46 +8,64 @@
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="se233.audioconverterapp1.controller.AudioConverterController">
 
-    <!-- Top: Title -->
+    <!-- Top: Title + Toolbar -->
     <top>
-        <Label text="Audio Converter App"
-               style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-padding: 10;" />
+        <VBox spacing="8" style="-fx-padding: 12 16 0 16;">
+
+            <HBox alignment="CENTER_LEFT">
+                <Label text="Audio Converter App"
+                       styleClass="ui-title" />
+            </HBox>
+
+            <!-- Toolbar -->
+            <ToolBar styleClass="topbar">
+                <Label text="Output Format:"/>
+                <ChoiceBox fx:id="formatChoiceBox" prefWidth="120"/>
+                <Separator orientation="VERTICAL"/>
+                <Button fx:id="convertButton" text="Convert" styleClass="btn btn-primary"/>
+                <Button fx:id="cancelButton" text="Cancel" styleClass="btn btn-warning"/>
+                <Pane HBox.hgrow="ALWAYS"/>
+                <Button fx:id="clearButton" text="Clear List" styleClass="btn btn-danger"/>
+            </ToolBar>
+        </VBox>
     </top>
 
     <!-- Center: Drop Zone + Table -->
     <center>
-        <VBox spacing="15" style="-fx-padding: 20;" alignment="CENTER">
-            <Label fx:id="dropZone" text="Drop your audio files here or double-click to select files"
-                   style="-fx-border-color: gray; -fx-border-style: dashed; fx-border-width: 2; -fx-padding: 40; -fx-font-size: 14px; -fx-text-fill: #666;" />
-            <TableView fx:id="fileTable" prefHeight="300" prefWidth="600">
+        <VBox spacing="16" alignment="CENTER" style="-fx-padding: 20;">
+            <!-- Drop Zone -->
+            <StackPane fx:id="dropContainer"
+                       pickOnBounds="true"
+                       maxWidth="720" minHeight="140"
+                       styleClass="dropzone">
+                <Label fx:id="dropZone"
+                       text="Drop your audio files here (double-click to browse)"
+                       styleClass="dropzone-text"/>
+            </StackPane>
+
+            <!-- Table -->
+            <TableView fx:id="fileTable" prefHeight="320" prefWidth="720">
                 <columns>
-                    <TableColumn fx:id="fileNameColumn" text="File Name" prefWidth="300" />
-                    <TableColumn fx:id="formatColumn" text="Format" prefWidth="100" />
-                    <TableColumn fx:id="sizeColumn" text="Size (KB)" prefWidth="100" />
-                    <TableColumn fx:id="progressColumn" text="Progress" prefWidth="150" />
-                    <TableColumn fx:id="statusColumn" text="Status" prefWidth="120" />
+                    <TableColumn fx:id="fileNameColumn" text="File Name" minWidth="280"/>
+                    <TableColumn fx:id="formatColumn" text="Format" minWidth="100" maxWidth="150"/>
+                    <TableColumn fx:id="sizeColumn" text="Size (KB)" minWidth="120" maxWidth="150"/>
+                    <TableColumn fx:id="progressColumn" text="Progress" minWidth="160"/>
+                    <TableColumn fx:id="statusColumn" text="Status" minWidth="140"/>
                 </columns>
+                <placeholder>
+                    <Label text="No audio files" />
+                </placeholder>
             </TableView>
         </VBox>
     </center>
 
-    <!-- Bottom: Controls -->
+    <!-- Bottom: Tip + Global Progress -->
     <bottom>
-        <VBox spacing="10" style="-fx-padding: 20;" alignment="CENTER">
-            <HBox spacing="20" alignment="CENTER">
-                <Label text="Output Format:"/>
-                <ChoiceBox fx:id="formatChoiceBox" prefWidth="150"/>
+        <VBox spacing="8" style="-fx-padding: 12 20 16 20;">
+            <HBox alignment="CENTER_LEFT">
+                <Label text="Supported formats: MP3, WAV, M4A, FLAC" styleClass="tip-text"/>
             </HBox>
-            <HBox spacing="20" alignment="CENTER">
-                <Button fx:id="convertButton" text="Convert"/>
-                <Button fx:id="clearButton" text="Clear"/>
-                <Button fx:id="cancelButton" text="Cancel" layoutX="450" layoutY="500" />
-            </HBox>
-            <!-- Global Progress -->
-             <HBox spacing="10" alignment="CENTER">
-                <Label text="Overall Progress:" />
-                <ProgressBar fx:id="globalProgressBar" prefWidth="300" />
-             </HBox>
+            <ProgressBar fx:id="globalProgressBar" prefWidth="700"/>
         </VBox>
     </bottom>
 

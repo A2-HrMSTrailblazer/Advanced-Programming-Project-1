@@ -60,15 +60,17 @@ public class AudioConverterController {
         // Buttons
         convertButton.setOnAction(e -> handleConvert());
         clearButton.setOnAction(e -> handleClear());
-        cancelButton.setOnAction(_ -> handleCancel());
+        cancelButton.setOnAction(e -> handleCancel());
 
-        // Drag & Drop
-        setupDragAndDrop();
+        // Drag & Drop + Double Click
+        setupFileImport();
 
+        // Initialize progress bar
         globalProgressBar.setProgress(0);
     }
 
-    private void setupDragAndDrop() {
+    private void setupFileImport() {
+        // Drag-and-drop
         dropZone.setOnDragOver(event -> {
             if (event.getGestureSource() != dropZone && event.getDragboard().hasFiles()) {
                 event.acceptTransferModes(TransferMode.COPY);
@@ -81,11 +83,7 @@ public class AudioConverterController {
             if (db.hasFiles()) {
                 db.getFiles().stream()
                         .filter(this::isAudioFile)
-                        .forEach(file -> fileData.add(new FileInfo(
-                                file.getName(),
-                                getExtension(file),
-                                formatSize(file.length() / 1024)
-                        )));
+                        .forEach(this::addFileToTable);
                 event.setDropCompleted(true);
             } else {
                 event.setDropCompleted(false);
@@ -93,20 +91,31 @@ public class AudioConverterController {
             event.consume();
         });
 
+        // Double-click → file chooser
         dropZone.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 FileChooser fileChooser = new FileChooser();
                 fileChooser.setTitle("Select Audio Files");
-                fileChooser.getExtensionFilters().add(new ExtensionFilter("Audio Files", "*.mp3", "*.wav", "*.m4a", "*.flac"));
+                fileChooser.getExtensionFilters().add(
+                        new ExtensionFilter("Audio Files", "*.mp3", "*.wav", "*.m4a", "*.flac")
+                );
                 List<File> selectedFiles = fileChooser.showOpenMultipleDialog(dropZone.getScene().getWindow());
 
                 if (selectedFiles != null) {
                     selectedFiles.stream()
                             .filter(this::isAudioFile)
-                            .forEach(file -> fileData.add(new FileInfo(file.getName(), getExtension(file), formatSize(file.length() / 1024))));
+                            .forEach(this::addFileToTable);
                 }
             }
         });
+    }
+
+    private void addFileToTable(File file) {
+        fileData.add(new FileInfo(
+                file.getAbsolutePath(),  // full path for FFmpeg
+                getExtension(file),
+                formatSize(file.length() / 1024)
+        ));
     }
 
     private boolean isAudioFile(File file) {
