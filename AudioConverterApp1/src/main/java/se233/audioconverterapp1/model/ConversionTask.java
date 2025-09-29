@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import javafx.concurrent.Task;
+import se233.audioconverterapp1.util.FFmpegManager;
 
 /**
  * A background task to convert a single audio file.
@@ -38,7 +39,7 @@ public class ConversionTask extends Task<Void> {
         File outputFile = new File(inputFile.getParentFile(), baseName + "." + outputFormat);
 
         try {
-            String ffmpegPath = "C:\\Users\\M S I\\Downloads\\ffmpeg-8.0-essentials_build\\ffmpeg-8.0-essentials_build\\bin\\ffmpeg.exe";
+            String ffmpegPath = FFmpegManager.getFFmpegPath();
             List<String> command;
             if (targetFormat.equalsIgnoreCase("m4a")) {
                 command = Arrays.asList(

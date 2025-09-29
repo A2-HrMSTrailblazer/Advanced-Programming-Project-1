@@ -12,6 +12,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import se233.audioconverterapp1.model.ConversionManager;
 import se233.audioconverterapp1.model.FileInfo;
+import se233.audioconverterapp1.util.FFmpegManager;
 
 import java.io.File;
 import java.text.NumberFormat;
@@ -36,6 +37,11 @@ public class AudioConverterController {
     @FXML private Button applyFormatButton;
     @FXML private Label dropZone;
     @FXML private ProgressBar overallProgress;
+    @FXML private Label overallProgressText;
+
+    @FXML private MenuItem setFFmpegPathMenu;
+
+    @FXML private Label ffmpegWarningLabel;
 
     // ==== Data + Manager ====
     private final ObservableList<FileInfo> fileData = FXCollections.observableArrayList();
@@ -48,11 +54,19 @@ public class AudioConverterController {
         setupFormatChoiceBox();
         setupButtons();
         setupFileImport();
+        updateFFmpegWarning();
         targetFormatColumn.setCellValueFactory(cell -> cell.getValue().targetFormatProperty());
         targetFormatColumn.setCellFactory(ChoiceBoxTableCell.forTableColumn("mp3", "wav", "m4a", "flac"));
         targetFormatColumn.setEditable(true);
         fileTable.setEditable(true);
         overallProgress.setProgress(0);
+        setFFmpegPathMenu.setOnAction(_ -> chooseFFmpegPath());
+        if (!FFmpegManager.isFFmpegAvailable()) {
+            overallProgressText.setText("FFmpeg not set. Go to Settings --> Set FFmpeg Path");
+        }
+        else {
+            overallProgressText.setText("");
+        }
     }
 
     // ---- Table setup ----
@@ -147,6 +161,11 @@ public class AudioConverterController {
 
     // ---- Conversion handling ----
     private void handleConvert() {
+        if (!FFmpegManager.isFFmpegAvailable()) {
+            showAlert("FFmpeg is not set. Please go to Settings --> SEt FFmpeg Path first.");
+            return;
+        }
+        
         if (fileData.isEmpty()) {
             showAlert("No files to convert!");
             return;
@@ -193,5 +212,26 @@ public class AudioConverterController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private void updateFFmpegWarning() {
+        if (FFmpegManager.isFFmpegAvailable()) {
+            ffmpegWarningLabel.setText("");
+        }
+        else {
+            ffmpegWarningLabel.setText("FFmpeg not found! Go to Settings --> Set Ffmpeg Path");
+        }
+    }
+
+    private void chooseFFmpegPath() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Select FFmpeg Executable");
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("FFmpeg Executable", "ffmpeg.exe", "ffmpeg"));
+        File file = chooser.showOpenDialog(fileTable.getScene().getWindow());
+        if (file != null) {
+            FFmpegManager.setFFmpegPath(file.getAbsolutePath());
+            updateFFmpegWarning();
+            showAlert("FFmpeg path saved: " + file.getAbsolutePath());
+        }
     }
 }

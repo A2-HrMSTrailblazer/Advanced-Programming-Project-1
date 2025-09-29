@@ -11,6 +11,11 @@
     <!-- Top: Title + Toolbar -->
     <top>
         <VBox spacing="8" style="-fx-padding: 12 16 0 16;">
+            <MenuBar style="-fx-background-color: #ffffff; -fx-text-fill: #ffffff;">
+                <Menu text="Settings" style="-fx-text-fill: #ffffff;">
+                    <MenuItem fx:id="setFFmpegPathMenu" text="Set FFmpeg Path" />
+                </Menu>
+            </MenuBar>
             <HBox alignment="CENTER_LEFT" spacing="10">
             <Label text="Audio Converter App"
                    styleClass="ui-title" />
@@ -34,6 +39,8 @@
     <!-- Center: Drop Zone + Table -->
     <center>
         <VBox spacing="16" alignment="CENTER" style="-fx-padding: 20;">
+            <!-- FFmpeg Warning -->
+             <Label fx:id="ffmpegWarningLabel" text="" style="-fx-text-fill: red; -fx-font-weight: bold; -fx-font-size: 14px;" />
             <!-- Drop Zone -->
             <StackPane fx:id="dropContainer"
                        pickOnBounds="true"
