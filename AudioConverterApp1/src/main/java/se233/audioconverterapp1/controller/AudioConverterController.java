@@ -33,6 +33,7 @@ public class AudioConverterController {
     @FXML private Button convertButton;
     @FXML private Button clearButton;
     @FXML private Button cancelButton;
+    @FXML private Button applyFormatButton;
     @FXML private Label dropZone;
     @FXML private ProgressBar overallProgress;
 
@@ -78,6 +79,7 @@ public class AudioConverterController {
         convertButton.setOnAction(e -> handleConvert());
         clearButton.setOnAction(e -> handleClear());
         cancelButton.setOnAction(e -> handleCancel());
+        applyFormatButton.setOnAction(_ -> applyGlobalFormat());
     }
 
     // ---- File import (drag & drop + double click) ----
@@ -166,6 +168,14 @@ public class AudioConverterController {
         conversionManager.cancelConversions();
         updateGlobalProgress();
         showAlert("Conversions cancelled.");
+    }
+
+    private void applyGlobalFormat() {
+        String globalFormat = formatChoiceBox.getValue();
+        for (FileInfo file : fileData) {
+            file.setTargetFormat(globalFormat);
+        }
+        showAlert("Applied global format (" + globalFormat + ") to all files.");
     }
 
     private void updateGlobalProgress() {
