@@ -4,6 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.ProgressBarTableCell;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
@@ -26,6 +27,7 @@ public class AudioConverterController {
     @FXML private TableColumn<FileInfo, String> sizeColumn;
     @FXML private TableColumn<FileInfo, Double> progressColumn;
     @FXML private TableColumn<FileInfo, String> statusColumn;
+    @FXML private TableColumn<FileInfo, String> targetFormatColumn;
 
     @FXML private ChoiceBox<String> formatChoiceBox;
     @FXML private Button convertButton;
@@ -45,6 +47,10 @@ public class AudioConverterController {
         setupFormatChoiceBox();
         setupButtons();
         setupFileImport();
+        targetFormatColumn.setCellValueFactory(cell -> cell.getValue().targetFormatProperty());
+        targetFormatColumn.setCellFactory(ChoiceBoxTableCell.forTableColumn("mp3", "wav", "m4a", "flac"));
+        targetFormatColumn.setEditable(true);
+        fileTable.setEditable(true);
         overallProgress.setProgress(0);
     }
 

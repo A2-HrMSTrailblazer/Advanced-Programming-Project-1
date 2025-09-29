@@ -34,7 +34,8 @@ public class ConversionTask extends Task<Void> {
 
         // Output file
         String baseName = inputFile.getName().replaceFirst("[.][^.]+$", "");
-        File outputFile = new File(inputFile.getParentFile(), baseName + "." + targetFormat);
+        String outputFormat = fileInfo.getTargetFormat();
+        File outputFile = new File(inputFile.getParentFile(), baseName + "." + outputFormat);
 
         try {
             String ffmpegPath = "C:\\Users\\M S I\\Downloads\\ffmpeg-8.0-essentials_build\\ffmpeg-8.0-essentials_build\\bin\\ffmpeg.exe";

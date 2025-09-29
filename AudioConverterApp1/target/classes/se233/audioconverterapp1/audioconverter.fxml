@@ -51,6 +51,7 @@
                     <TableColumn fx:id="sizeColumn" text="Size (KB)" minWidth="120" maxWidth="150"/>
                     <TableColumn fx:id="progressColumn" text="Progress" minWidth="160"/>
                     <TableColumn fx:id="statusColumn" text="Status" minWidth="140"/>
+                    <TableColumn fx:id="targetFormatColumn" text="Format" minWidth="140" />
                 </columns>
                 <placeholder>
                     <Label text="No audio files" />

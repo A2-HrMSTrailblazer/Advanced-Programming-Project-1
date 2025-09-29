@@ -10,6 +10,7 @@ public class FileInfo {
     private final StringProperty size;
     private final DoubleProperty progress;
     private final StringProperty status;
+    private final StringProperty targetFormat;
 
     public FileInfo(String filePath, String format, String size) {
         File file = new File(filePath);
@@ -19,6 +20,7 @@ public class FileInfo {
         this.size = new SimpleStringProperty(size);
         this.progress = new SimpleDoubleProperty(0.0);
         this.status = new SimpleStringProperty("Pending");
+        this.targetFormat = new SimpleStringProperty("mp3");
     }
 
     public String getFilePath() { return filePath.get(); }
@@ -40,4 +42,8 @@ public class FileInfo {
     public String getStatus() { return status.get(); }
     public StringProperty statusProperty() { return status; }
     public void setStatus(String value) { status.set(value); }
+
+    public String getTargetFormat() { return targetFormat.get(); }
+    public void setTargetFormat(String format) { targetFormat.set(format); }
+    public StringProperty targetFormatProperty() { return targetFormat; }
 }
