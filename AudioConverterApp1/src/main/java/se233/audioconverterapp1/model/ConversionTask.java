@@ -3,6 +3,7 @@ package se233.audioconverterapp1.model;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,16 +19,28 @@ public class ConversionTask extends Task<Void> {
 
     private final FileInfo fileInfo;
     private final String targetFormat;
+    private final String bitrate;
+    private final String sampleRate;
+    private final String channel;
 
-    public ConversionTask(FileInfo fileInfo, String targetFormat) {
+    public ConversionTask(FileInfo fileInfo, String targetFormat, String bitrate, String sampleRate, String channel) {
         this.fileInfo = fileInfo;
         this.targetFormat = targetFormat;
+        this.bitrate = bitrate;
+        this.sampleRate = sampleRate;
+        this.channel = channel;
     }
 
     @Override
     protected Void call() throws Exception {
         fileInfo.setProgress(0.0);
         fileInfo.setStatus("Converting...");
+
+        String ffmpegPath = FFmpegManager.getFFmpegPath();
+        if (ffmpegPath == null || ffmpegPath.isBlank()) {
+            fileInfo.setStatus("FFmpeg not set");
+            return null;
+        }
 
         // Input file
         String inputPath = fileInfo.getFilePath();
@@ -39,18 +52,34 @@ public class ConversionTask extends Task<Void> {
         File outputFile = new File(inputFile.getParentFile(), baseName + "." + outputFormat);
 
         try {
-            String ffmpegPath = FFmpegManager.getFFmpegPath();
-            List<String> command;
-            if (targetFormat.equalsIgnoreCase("m4a")) {
-                command = Arrays.asList(
-                    ffmpegPath, "-y", "-i", inputPath, "-vn", "-c:a", "aac", outputFile.getAbsolutePath()
-                );
+            List<String> command = new ArrayList<>();
+            command.add(ffmpegPath);
+            command.add("-y");
+            command.add("-i");
+            command.add(inputFile.getAbsolutePath());
+
+            if (bitrate != null && !bitrate.isBlank()) {
+                command.add("-b:a");
+                command.add(bitrate);
             }
-            else {
-                command = Arrays.asList(
-                    ffmpegPath, "-y", "-i", inputPath, outputFile.getAbsolutePath()
-                );
+
+            if (sampleRate != null && !sampleRate.isBlank()) {
+                command.add("-ar");
+                command.add(sampleRate);
             }
+
+            if (channel != null && !channel.isBlank()) {
+                command.add("-ac");
+                command.add(channel);
+            }
+
+            if ("m4a".equalsIgnoreCase(targetFormat)) {
+                command.add("-c:a");
+                command.add("aac");
+            }
+
+            command.add(outputFile.getAbsolutePath());
+
             ProcessBuilder pb = new ProcessBuilder(command);
             pb.redirectErrorStream(true);
             Process process = pb.start();
@@ -62,23 +91,13 @@ public class ConversionTask extends Task<Void> {
                 }
             }
 
-            for (int i = 1; i <= 100; i++) {
-                if (isCancelled()) {
-                    fileInfo.setStatus("Cancelled");
-                    break;
-                }
-                Thread.sleep(30);
-                updateProgress(i, 100);
-                fileInfo.setProgress(i / 100.0);
-            }
-
             int exitCode = process.waitFor();
             if (exitCode == 0) {
                 fileInfo.setStatus("Success");
                 fileInfo.setProgress(1.0);
             }
             else {
-                fileInfo.setStatus("Failed");
+                fileInfo.setStatus("Failed (exit " + exitCode + ")");
             }
         }
         catch (Exception e){

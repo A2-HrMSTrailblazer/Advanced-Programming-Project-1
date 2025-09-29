@@ -32,6 +32,9 @@ public class AudioConverterController {
     @FXML private TableColumn<FileInfo, Void> actionColumn;
 
     @FXML private ChoiceBox<String> formatChoiceBox;
+    @FXML private ChoiceBox<String> bitrateChoiceBox;
+    @FXML private ChoiceBox<String> sampleRateChoiceBox;
+    @FXML private ChoiceBox<String> channelChoiceBox;
     @FXML private Button convertButton;
     @FXML private Button clearButton;
     @FXML private Button cancelButton;
@@ -54,6 +57,7 @@ public class AudioConverterController {
         setupButtons();
         setupFileImport();
         setupActionColumn();
+        setupAudioSettings();
 
         // FFmpeg setup
         setFFmpegPathMenu.setOnAction(_ -> chooseFFmpegPath());
@@ -158,6 +162,17 @@ public class AudioConverterController {
         });
     }
 
+    private void setupAudioSettings() {
+        bitrateChoiceBox.setItems(FXCollections.observableArrayList("128k", "192k", "256k", "320k"));
+        bitrateChoiceBox.setValue("192k");
+
+        sampleRateChoiceBox.setItems(FXCollections.observableArrayList("44100", "48000", "96000"));
+        sampleRateChoiceBox.setValue("44100");
+
+        channelChoiceBox.setItems(FXCollections.observableArrayList("1", "2"));
+        channelChoiceBox.setValue("2");
+    }
+
     // ---- Conversion handling ----
     private void handleConvert() {
         if (!FFmpegManager.isFFmpegAvailable()) {
@@ -170,7 +185,10 @@ public class AudioConverterController {
         }
 
         String outputFormat = formatChoiceBox.getValue();
-        conversionManager.startConversions(fileData, outputFormat, this::updateGlobalProgress);
+        String bitrate = bitrateChoiceBox.getValue();
+        String sampleRate = sampleRateChoiceBox.getValue();
+        String channel = channelChoiceBox.getValue();
+        conversionManager.startConversions(fileData, outputFormat, this::updateGlobalProgress, bitrate, sampleRate, channel);
 
         showAlert("Started conversion of " + fileData.size() + " file(s).");
     }

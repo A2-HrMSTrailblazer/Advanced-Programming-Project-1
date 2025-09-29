@@ -27,7 +27,19 @@
                 <Label text="Output Format:"/>
                 <ChoiceBox fx:id="formatChoiceBox" prefWidth="120"/>
                 <Button fx:id="applyFormatButton" text="Apply Global Format" layoutX="20" layoutY="500" />
+                <!-- Advanced Audio Settings -->
                 <Separator orientation="VERTICAL"/>
+
+                <Label text="Bitrate;" />
+                <ChoiceBox fx:id="bitrateChoiceBox" prefWidth="100" />
+
+                <Label text="Sample Rate:" />
+                <ChoiceBox fx:id="sampleRateChoiceBox" prefWidth="100" />
+
+                <Label text="Channel:" />
+                <ChoiceBox fx:id="channelChoiceBox" prefWidth="80" />
+
+                <Separator orientation="VERTICAL" />
                 <Button fx:id="convertButton" text="Convert" styleClass="btn btn-primary"/>
                 <Button fx:id="cancelButton" text="Cancel   "/>
                 <Pane HBox.hgrow ="ALWAYS"/>
