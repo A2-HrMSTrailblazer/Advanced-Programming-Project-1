@@ -8,6 +8,7 @@ import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.ProgressBarTableCell;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import se233.audioconverterapp1.model.ConversionManager;
@@ -29,6 +30,7 @@ public class AudioConverterController {
     @FXML private TableColumn<FileInfo, Double> progressColumn;
     @FXML private TableColumn<FileInfo, String> statusColumn;
     @FXML private TableColumn<FileInfo, String> targetFormatColumn;
+    @FXML private TableColumn<FileInfo, Void> actionColumn;
 
     @FXML private ChoiceBox<String> formatChoiceBox;
     @FXML private Button convertButton;
@@ -54,6 +56,7 @@ public class AudioConverterController {
         setupFormatChoiceBox();
         setupButtons();
         setupFileImport();
+        setupActionColumn();
         updateFFmpegWarning();
         targetFormatColumn.setCellValueFactory(cell -> cell.getValue().targetFormatProperty());
         targetFormatColumn.setCellFactory(ChoiceBoxTableCell.forTableColumn("mp3", "wav", "m4a", "flac"));
@@ -128,6 +131,38 @@ public class AudioConverterController {
                 List<File> selectedFiles = fileChooser.showOpenMultipleDialog(dropZone.getScene().getWindow());
                 if (selectedFiles != null) {
                     selectedFiles.stream().filter(this::isAudioFile).forEach(this::addFileToTable);
+                }
+            }
+        });
+    }
+
+    private void setupActionColumn() {
+        actionColumn.setCellFactory(col -> new TableCell<>() {
+            private final Button cancelBtn = new Button("Cancel");
+            private final Button clearBtn = new Button("Clear");
+
+            {
+                cancelBtn.setOnAction(e -> {
+                    FileInfo file = getTableView().getItems().get(getIndex());
+                    conversionManager.cancelConversion(file);
+                    file.setStatus("Cancelled");
+                });
+
+                clearBtn.setOnAction(e -> {
+                    FileInfo file = getTableView().getItems().get(getIndex());
+                    getTableView().getItems().remove(file);
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                }
+                else {
+                    HBox box = new HBox(5, cancelBtn, clearBtn);
+                    setGraphic(box);
                 }
             }
         });

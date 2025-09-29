@@ -1,26 +1,29 @@
 package se233.audioconverterapp1.model;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 
 public class ConversionManager {
 
-    private final List<ConversionTask> activeTasks = new ArrayList<>();
+    private final Map<FileInfo, ConversionTask> activeTasks = new HashMap<>();
 
     public void startConversions(ObservableList<FileInfo> files, String outputFormat, Runnable onProgressUpdate) {
         cancelConversions();
         for (FileInfo info : files) {
-            ConversionTask task = new ConversionTask(info, outputFormat);
+            ConversionTask task = new ConversionTask(info, info.getTargetFormat());
 
             // Update global progress after each progress update
             task.progressProperty().addListener((_, _, _) ->
                     Platform.runLater(onProgressUpdate)
             );
 
-            activeTasks.add(task);
+            activeTasks.put(info, task);
 
             Thread t = new Thread(task);
             t.setDaemon(true);
@@ -29,9 +32,17 @@ public class ConversionManager {
     }
 
     public void cancelConversions() {
-        for (ConversionTask task : activeTasks) {
+        for (ConversionTask task : activeTasks.values()) {
             task.cancel();
         }
         activeTasks.clear();
+    }
+
+    public void cancelConversion(FileInfo file) {
+        ConversionTask task = activeTasks.get(file);
+        if (task != null) {
+            task.cancel();
+            activeTasks.remove(file);
+        }
     }
 }
