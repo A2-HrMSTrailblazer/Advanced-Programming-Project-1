@@ -10,7 +10,6 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
 import se233.audioconverterapp1.model.ConversionManager;
 import se233.audioconverterapp1.model.FileInfo;
 import se233.audioconverterapp1.util.FFmpegManager;
@@ -40,10 +39,8 @@ public class AudioConverterController {
     @FXML private Label dropZone;
     @FXML private ProgressBar overallProgress;
     @FXML private Label overallProgressText;
-
-    @FXML private MenuItem setFFmpegPathMenu;
-
     @FXML private Label ffmpegWarningLabel;
+    @FXML private MenuItem setFFmpegPathMenu;
 
     // ==== Data + Manager ====
     private final ObservableList<FileInfo> fileData = FXCollections.observableArrayList();
@@ -57,19 +54,12 @@ public class AudioConverterController {
         setupButtons();
         setupFileImport();
         setupActionColumn();
-        updateFFmpegWarning();
-        targetFormatColumn.setCellValueFactory(cell -> cell.getValue().targetFormatProperty());
-        targetFormatColumn.setCellFactory(ChoiceBoxTableCell.forTableColumn("mp3", "wav", "m4a", "flac"));
-        targetFormatColumn.setEditable(true);
-        fileTable.setEditable(true);
-        overallProgress.setProgress(0);
+
+        // FFmpeg setup
         setFFmpegPathMenu.setOnAction(_ -> chooseFFmpegPath());
-        if (!FFmpegManager.isFFmpegAvailable()) {
-            overallProgressText.setText("FFmpeg not set. Go to Settings --> Set FFmpeg Path");
-        }
-        else {
-            overallProgressText.setText("");
-        }
+        updateFFmpegWarning();
+
+        overallProgress.setProgress(0);
     }
 
     // ---- Table setup ----
@@ -82,10 +72,15 @@ public class AudioConverterController {
         progressColumn.setCellValueFactory(cell -> cell.getValue().progressProperty().asObject());
         progressColumn.setCellFactory(ProgressBarTableCell.forTableColumn());
 
+        targetFormatColumn.setCellValueFactory(cell -> cell.getValue().targetFormatProperty());
+        targetFormatColumn.setCellFactory(ChoiceBoxTableCell.forTableColumn("mp3", "wav", "m4a", "flac"));
+        targetFormatColumn.setEditable(true);
+
         fileTable.setItems(fileData);
+        fileTable.setEditable(true);
     }
 
-    // ---- Format choices ----
+    // ---- Format choice box ----
     private void setupFormatChoiceBox() {
         formatChoiceBox.setItems(FXCollections.observableArrayList("mp3", "wav", "m4a", "flac"));
         formatChoiceBox.setValue("mp3");
@@ -99,9 +94,9 @@ public class AudioConverterController {
         applyFormatButton.setOnAction(_ -> applyGlobalFormat());
     }
 
-    // ---- File import (drag & drop + double click) ----
+    // ---- File import ----
     private void setupFileImport() {
-        // Drag-and-drop
+        // Drag & drop
         dropZone.setOnDragOver(event -> {
             if (event.getGestureSource() != dropZone && event.getDragboard().hasFiles()) {
                 event.acceptTransferModes(TransferMode.COPY);
@@ -120,13 +115,13 @@ public class AudioConverterController {
             event.consume();
         });
 
-        // Double click = open file chooser
+        // Double click → FileChooser
         dropZone.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 FileChooser fileChooser = new FileChooser();
                 fileChooser.setTitle("Select Audio Files");
                 fileChooser.getExtensionFilters().add(
-                        new ExtensionFilter("Audio Files", "*.mp3", "*.wav", "*.m4a", "*.flac")
+                        new FileChooser.ExtensionFilter("Audio Files", "*.mp3", "*.wav", "*.m4a", "*.flac")
                 );
                 List<File> selectedFiles = fileChooser.showOpenMultipleDialog(dropZone.getScene().getWindow());
                 if (selectedFiles != null) {
@@ -136,6 +131,7 @@ public class AudioConverterController {
         });
     }
 
+    // ---- Action column (per-file Cancel/Clear) ----
     private void setupActionColumn() {
         actionColumn.setCellFactory(col -> new TableCell<>() {
             private final Button cancelBtn = new Button("Cancel");
@@ -157,50 +153,17 @@ public class AudioConverterController {
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                }
-                else {
-                    HBox box = new HBox(5, cancelBtn, clearBtn);
-                    setGraphic(box);
-                }
+                setGraphic(empty ? null : new HBox(5, cancelBtn, clearBtn));
             }
         });
-    }
-
-    // ---- File handling helpers ----
-    private void addFileToTable(File file) {
-        fileData.add(new FileInfo(
-                file.getAbsolutePath(),   // full path (FFmpeg needs this)
-                getExtension(file),
-                formatSize(file.length() / 1024)
-        ));
-    }
-
-    private boolean isAudioFile(File file) {
-        String name = file.getName().toLowerCase();
-        return name.endsWith(".mp3") || name.endsWith(".wav")
-                || name.endsWith(".m4a") || name.endsWith(".flac");
-    }
-
-    private String getExtension(File file) {
-        String name = file.getName();
-        int dot = name.lastIndexOf('.');
-        return (dot == -1) ? "" : name.substring(dot + 1);
-    }
-
-    private String formatSize(long sizeKB) {
-        NumberFormat nf = NumberFormat.getInstance(Locale.US);
-        return nf.format(sizeKB) + " KB";
     }
 
     // ---- Conversion handling ----
     private void handleConvert() {
         if (!FFmpegManager.isFFmpegAvailable()) {
-            showAlert("FFmpeg is not set. Please go to Settings --> SEt FFmpeg Path first.");
+            showAlert("FFmpeg is not set. Please go to Settings → Set FFmpeg Path.");
             return;
         }
-        
         if (fileData.isEmpty()) {
             showAlert("No files to convert!");
             return;
@@ -209,19 +172,17 @@ public class AudioConverterController {
         String outputFormat = formatChoiceBox.getValue();
         conversionManager.startConversions(fileData, outputFormat, this::updateGlobalProgress);
 
-        showAlert("Started conversion of " + fileData.size() + " file(s) to " + outputFormat);
+        showAlert("Started conversion of " + fileData.size() + " file(s).");
     }
 
     private void handleClear() {
         fileData.clear();
         overallProgress.setProgress(0);
-        showAlert("File list cleared.");
     }
 
     private void handleCancel() {
         conversionManager.cancelConversions();
         updateGlobalProgress();
-        showAlert("Conversions cancelled.");
     }
 
     private void applyGlobalFormat() {
@@ -241,32 +202,58 @@ public class AudioConverterController {
         overallProgress.setProgress(sum / fileData.size());
     }
 
-    // ---- Utility ----
-    private void showAlert(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+    // ---- File helpers ----
+    private void addFileToTable(File file) {
+        fileData.add(new FileInfo(
+                file.getAbsolutePath(),
+                getExtension(file),
+                formatSize(file.length() / 1024)
+        ));
     }
 
+    private boolean isAudioFile(File file) {
+        String name = file.getName().toLowerCase();
+        return name.endsWith(".mp3") || name.endsWith(".wav")
+                || name.endsWith(".m4a") || name.endsWith(".flac");
+    }
+
+    private String getExtension(File file) {
+        int dot = file.getName().lastIndexOf('.');
+        return (dot == -1) ? "" : file.getName().substring(dot + 1);
+    }
+
+    private String formatSize(long sizeKB) {
+        NumberFormat nf = NumberFormat.getInstance(Locale.US);
+        return nf.format(sizeKB) + " KB";
+    }
+
+    // ---- FFmpeg setup ----
     private void updateFFmpegWarning() {
         if (FFmpegManager.isFFmpegAvailable()) {
             ffmpegWarningLabel.setText("");
-        }
-        else {
-            ffmpegWarningLabel.setText("FFmpeg not found! Go to Settings --> Set Ffmpeg Path");
+        } else {
+            ffmpegWarningLabel.setText("FFmpeg not set! Go to Settings → Set Path");
         }
     }
 
     private void chooseFFmpegPath() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Select FFmpeg Executable");
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("FFmpeg Executable", "ffmpeg.exe", "ffmpeg"));
+        chooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("FFmpeg Executable", "ffmpeg.exe", "ffmpeg")
+        );
         File file = chooser.showOpenDialog(fileTable.getScene().getWindow());
         if (file != null) {
             FFmpegManager.setFFmpegPath(file.getAbsolutePath());
             updateFFmpegWarning();
-            showAlert("FFmpeg path saved: " + file.getAbsolutePath());
         }
+    }
+
+    // ---- Utility ----
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
