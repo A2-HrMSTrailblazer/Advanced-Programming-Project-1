@@ -1,5 +1,6 @@
 package se233.audioconverterapp1.controller;
 
+import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -9,8 +10,11 @@ import javafx.scene.control.cell.ProgressBarTableCell;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.util.Duration;
 import se233.audioconverterapp1.model.ConversionManager;
 import se233.audioconverterapp1.model.FileInfo;
 import se233.audioconverterapp1.util.FFmpegManager;
@@ -40,11 +44,14 @@ public class AudioConverterController {
     @FXML private Button clearButton;
     @FXML private Button cancelButton;
     @FXML private Button applyFormatButton;
+    @FXML private StackPane dropContainer;
     @FXML private Label dropZone;
     @FXML private ProgressBar overallProgress;
     @FXML private Label overallProgressText;
     @FXML private Label ffmpegWarningLabel;
     @FXML private MenuItem setFFmpegPathMenu;
+
+    @FXML private VBox configPanel;
 
     // ==== Data + Manager ====
     private final ObservableList<FileInfo> fileData = FXCollections.observableArrayList();
@@ -102,14 +109,14 @@ public class AudioConverterController {
     // ---- File import ----
     private void setupFileImport() {
         // Drag & drop
-        dropZone.setOnDragOver(event -> {
-            if (event.getGestureSource() != dropZone && event.getDragboard().hasFiles()) {
+        dropContainer.setOnDragOver(event -> {
+            if (event.getGestureSource() != dropContainer && event.getDragboard().hasFiles()) {
                 event.acceptTransferModes(TransferMode.COPY);
             }
             event.consume();
         });
 
-        dropZone.setOnDragDropped(event -> {
+        dropContainer.setOnDragDropped(event -> {
             Dragboard db = event.getDragboard();
             if (db.hasFiles()) {
                 db.getFiles().stream().filter(this::isAudioFile).forEach(this::addFileToTable);
@@ -121,14 +128,14 @@ public class AudioConverterController {
         });
 
         // Double click → FileChooser
-        dropZone.setOnMouseClicked(event -> {
+        dropContainer.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 FileChooser fileChooser = new FileChooser();
                 fileChooser.setTitle("Select Audio Files");
                 fileChooser.getExtensionFilters().add(
                         new FileChooser.ExtensionFilter("Audio Files", "*.mp3", "*.wav", "*.m4a", "*.flac")
                 );
-                List<File> selectedFiles = fileChooser.showOpenMultipleDialog(dropZone.getScene().getWindow());
+                List<File> selectedFiles = fileChooser.showOpenMultipleDialog(dropContainer.getScene().getWindow());
                 if (selectedFiles != null) {
                     selectedFiles.stream().filter(this::isAudioFile).forEach(this::addFileToTable);
                 }
@@ -205,6 +212,9 @@ public class AudioConverterController {
     private void handleClear() {
         fileData.clear();
         overallProgress.setProgress(0);
+
+        configPanel.setVisible(false);
+        configPanel.setManaged(false);
     }
 
     private void handleCancel() {
@@ -236,6 +246,13 @@ public class AudioConverterController {
                 getExtension(file),
                 formatSize(file.length() / 1024)
         ));
+
+        if (!fileData.isEmpty()) {
+            dropContainer.setMinHeight(60);
+            dropContainer.setMaxHeight(80);
+            dropZone.setText("Add more files by dropping here or double clicking");
+            showConfigPanel();
+        }
     }
 
     private boolean isAudioFile(File file) {
@@ -282,5 +299,15 @@ public class AudioConverterController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private void showConfigPanel() {
+        configPanel.setVisible(true);
+        configPanel.setManaged(true);
+
+        TranslateTransition tt = new TranslateTransition(Duration.millis(300), configPanel);
+        tt.setFromY(-20);
+        tt.setToY(0);
+        tt.play();
     }
 }
