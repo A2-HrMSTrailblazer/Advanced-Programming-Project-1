@@ -93,9 +93,9 @@ public class AudioConverterController {
 
     // ---- Buttons ----
     private void setupButtons() {
-        convertButton.setOnAction(e -> handleConvert());
-        clearButton.setOnAction(e -> handleClear());
-        cancelButton.setOnAction(e -> handleCancel());
+        convertButton.setOnAction(_ -> handleConvert());
+        clearButton.setOnAction(_ -> handleClear());
+        cancelButton.setOnAction(_ -> handleCancel());
         applyFormatButton.setOnAction(_ -> applyGlobalFormat());
     }
 
@@ -138,18 +138,18 @@ public class AudioConverterController {
 
     // ---- Action column (per-file Cancel/Clear) ----
     private void setupActionColumn() {
-        actionColumn.setCellFactory(col -> new TableCell<>() {
+        actionColumn.setCellFactory(_ -> new TableCell<>() {
             private final Button cancelBtn = new Button("Cancel");
             private final Button clearBtn = new Button("Clear");
 
             {
-                cancelBtn.setOnAction(e -> {
+                cancelBtn.setOnAction(_ -> {
                     FileInfo file = getTableView().getItems().get(getIndex());
                     conversionManager.cancelConversion(file);
                     file.setStatus("Cancelled");
                 });
 
-                clearBtn.setOnAction(e -> {
+                clearBtn.setOnAction(_ -> {
                     FileInfo file = getTableView().getItems().get(getIndex());
                     getTableView().getItems().remove(file);
                 });

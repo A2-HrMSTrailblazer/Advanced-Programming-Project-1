@@ -7,7 +7,7 @@ import javafx.stage.Stage;
 
 public class AudioConverterApp extends Application {
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(@SuppressWarnings("exports") Stage stage) throws Exception {
         FXMLLoader loader = new FXMLLoader(AudioConverterApp.class.getResource("audioconverter.fxml"));
         Scene scene = new Scene(loader.load(), 800, 600);
         scene.getStylesheets().add(AudioConverterApp.class.getResource("ui.css").toExternalForm());

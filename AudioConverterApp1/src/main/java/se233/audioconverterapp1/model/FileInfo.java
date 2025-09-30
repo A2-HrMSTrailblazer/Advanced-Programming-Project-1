@@ -24,26 +24,33 @@ public class FileInfo {
     }
 
     public String getFilePath() { return filePath.get(); }
+    @SuppressWarnings("exports")
     public StringProperty filePathProperty() { return filePath; }
 
     public String getFileName() { return fileName.get(); }
+    @SuppressWarnings("exports")
     public StringProperty fileNameProperty() { return fileName; }
 
     public String getFormat() { return format.get(); }
+    @SuppressWarnings("exports")
     public StringProperty formatProperty() { return format; }
 
     public String getSize() { return size.get(); }
+    @SuppressWarnings("exports")
     public StringProperty sizeProperty() { return size; }
 
     public double getProgress() { return progress.get(); }
+    @SuppressWarnings("exports")
     public DoubleProperty progressProperty() { return progress; }
     public void setProgress(double value) { progress.set(value); }
 
     public String getStatus() { return status.get(); }
+    @SuppressWarnings("exports")
     public StringProperty statusProperty() { return status; }
     public void setStatus(String value) { status.set(value); }
 
     public String getTargetFormat() { return targetFormat.get(); }
     public void setTargetFormat(String format) { targetFormat.set(format); }
+    @SuppressWarnings("exports")
     public StringProperty targetFormatProperty() { return targetFormat; }
 }

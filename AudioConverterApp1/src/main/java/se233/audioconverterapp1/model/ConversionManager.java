@@ -1,9 +1,7 @@
 package se233.audioconverterapp1.model;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javafx.application.Platform;
