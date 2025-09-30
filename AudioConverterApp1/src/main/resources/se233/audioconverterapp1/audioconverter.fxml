@@ -30,7 +30,7 @@
                 <!-- Advanced Audio Settings -->
                 <Separator orientation="VERTICAL"/>
 
-                <Label text="Bitrate;" />
+                <Label text="Bitrate:" />
                 <ChoiceBox fx:id="bitrateChoiceBox" prefWidth="100" />
 
                 <Label text="Sample Rate:" />
@@ -59,7 +59,7 @@
                        maxWidth="720" minHeight="140"
                        styleClass="dropzone">
                 <Label fx:id="dropZone"
-                       text="Drop your audio files here"
+                       text="Drop your audio files here or double click the area to choose files"
                        styleClass="dropzone-text"/>
             </StackPane>
 

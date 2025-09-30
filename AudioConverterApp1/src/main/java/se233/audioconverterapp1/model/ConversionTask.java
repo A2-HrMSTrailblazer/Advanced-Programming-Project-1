@@ -4,16 +4,16 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javafx.concurrent.Task;
 import se233.audioconverterapp1.util.FFmpegManager;
+import se233.audioconverterapp1.util.FFprobeHelper;
 
 /**
  * A background task to convert a single audio file.
- * For now it simulates work by updating progress in a loop.
- * Later we can integrate FFmpeg command execution here.
  */
 public class ConversionTask extends Task<Void> {
 
@@ -22,6 +22,8 @@ public class ConversionTask extends Task<Void> {
     private final String bitrate;
     private final String sampleRate;
     private final String channel;
+
+    private final Pattern TIME_PATTERN = Pattern.compile("time=(\\d+):(\\d+):(\\d+).(\\d+)");
 
     public ConversionTask(FileInfo fileInfo, String targetFormat, String bitrate, String sampleRate, String channel) {
         this.fileInfo = fileInfo;
@@ -80,6 +82,12 @@ public class ConversionTask extends Task<Void> {
 
             command.add(outputFile.getAbsolutePath());
 
+            double totalSeconds = FFprobeHelper.getDurationSeconds(inputFile);
+            if (totalSeconds <= 0) {
+                System.out.println("[FFmpeg] Could not detect duration, progress will be fake.");
+                totalSeconds = 1.0;
+            }
+
             ProcessBuilder pb = new ProcessBuilder(command);
             pb.redirectErrorStream(true);
             Process process = pb.start();
@@ -88,6 +96,21 @@ public class ConversionTask extends Task<Void> {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     System.out.println("[FFmpeg] " + line);
+
+                    // Real time progress
+                    Matcher matcher = TIME_PATTERN.matcher(line);
+                    if (matcher.find()) {
+                        int h = Integer.parseInt(matcher.group(1));
+                        int m = Integer.parseInt(matcher.group(2));
+                        int s = Integer.parseInt(matcher.group(3));
+                        int ms = Integer.parseInt(matcher.group(4));
+
+                        double current = (h * 3600) + (m * 60) + s + (ms / 100.0);
+                        double progress = Math.min(1.0, current / totalSeconds);
+
+                        updateProgress(progress, 1.0);
+                        fileInfo.setProgress(progress);
+                    }
                 }
             }
 
