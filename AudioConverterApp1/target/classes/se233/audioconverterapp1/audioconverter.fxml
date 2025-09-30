@@ -8,97 +8,93 @@
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="se233.audioconverterapp1.controller.AudioConverterController">
 
-    <!-- Top: Title + Toolbar -->
+    <!-- Top: App Title + Menu -->
     <top>
         <VBox spacing="8" style="-fx-padding: 12 16 0 16;">
-            <MenuBar style="-fx-background-color: #ffffff; -fx-text-fill: #ffffff;">
-                <Menu text="Settings" style="-fx-text-fill: #ffffff;">
+            <MenuBar style="-fx-background-color: #ffffff;">
+                <Menu text="Settings">
                     <MenuItem fx:id="setFFmpegPathMenu" text="Set FFmpeg Path" />
                 </Menu>
             </MenuBar>
             <HBox alignment="CENTER_LEFT" spacing="10">
-            <Label text="Audio Converter App"
-                   styleClass="ui-title" />
-                <Label text="• Supported formats: MP3, WAV, M4A, FLAC" style="formats-tip"/>
+                <Label text="Audio Converter App" styleClass="ui-title" />
+                <Label text="• Supported formats: MP3, WAV, M4A, FLAC" styleClass="formats-tip"/>
             </HBox>
-
-            <!-- Toolbar -->
-            <ToolBar styleClass="topbar">
-                <Label text="Output Format:"/>
-                <ChoiceBox fx:id="formatChoiceBox" prefWidth="120"/>
-                <Button fx:id="applyFormatButton" text="Apply Global Format" layoutX="20" layoutY="500" />
-                <!-- Advanced Audio Settings -->
-                <Separator orientation="VERTICAL"/>
-
-                <Label text="Bitrate:" />
-                <ChoiceBox fx:id="bitrateChoiceBox" prefWidth="100" />
-
-                <Label text="Sample Rate:" />
-                <ChoiceBox fx:id="sampleRateChoiceBox" prefWidth="100" />
-
-                <Label text="Channel:" />
-                <ChoiceBox fx:id="channelChoiceBox" prefWidth="80" />
-
-                <Separator orientation="VERTICAL" />
-                <Button fx:id="convertButton" text="Convert" styleClass="btn btn-primary"/>
-                <Button fx:id="cancelButton" text="Cancel   "/>
-                <Pane HBox.hgrow ="ALWAYS"/>
-                <Button fx:id="clearButton" text="Clear List" styleClass="btn btn-danger"/>
-            </ToolBar>
         </VBox>
     </top>
 
-    <!-- Center: Drop Zone + Table -->
+    <!-- Center: Drop Zone only at first -->
     <center>
         <VBox spacing="16" alignment="CENTER" style="-fx-padding: 20;">
             <!-- FFmpeg Warning -->
-             <Label fx:id="ffmpegWarningLabel" text="" style="-fx-text-fill: red; -fx-font-weight: bold; -fx-font-size: 14px;" />
+            <Label fx:id="ffmpegWarningLabel"
+                   text=""
+                   style="-fx-text-fill: red; -fx-font-weight: bold; -fx-font-size: 14px;" />
+
             <!-- Drop Zone -->
             <StackPane fx:id="dropContainer"
                        pickOnBounds="true"
-                       maxWidth="720" minHeight="140"
+                       maxWidth="720" minHeight="200"
                        styleClass="dropzone">
                 <Label fx:id="dropZone"
-                       text="Drop your audio files here or double click the area to choose files"
+                       text="Drop your audio files here or double click to select"
                        styleClass="dropzone-text"/>
             </StackPane>
 
-            <!-- Table -->
-            <TableView fx:id="fileTable" prefHeight="320" prefWidth="720">
-                <columns>
-                    <TableColumn fx:id="fileNameColumn" text="File Name" minWidth="280"/>
-                    <TableColumn fx:id="formatColumn" text="Format" minWidth="100" maxWidth="150"/>
-                    <TableColumn fx:id="sizeColumn" text="Size (KB)" minWidth="120" maxWidth="150"/>
-                    <TableColumn fx:id="progressColumn" text="Progress" minWidth="160"/>
-                    <TableColumn fx:id="statusColumn" text="Status" minWidth="140"/>
-                    <TableColumn fx:id="targetFormatColumn" text="Format" minWidth="140" />
-                    <TableColumn fx:id="actionColumn" text="Actions" prefWidth="150" />
-                </columns>
-                <placeholder>
-                    <Label text="No audio files" />
-                </placeholder>
-            </TableView>
+            <!-- Hidden Config Panel -->
+            <VBox fx:id="configPanel"
+                  spacing="16"
+                  alignment="CENTER"
+                  visible="false"
+                  managed="false">
+
+                <!-- Toolbar -->
+                <ToolBar styleClass="topbar">
+                    <Label text="Output Format:"/>
+                    <ChoiceBox fx:id="formatChoiceBox" prefWidth="120"/>
+                    <Button fx:id="applyFormatButton" text="Apply Global Format" />
+
+                    <!-- Advanced Audio Settings -->
+                    <Separator orientation="VERTICAL"/>
+                    <Label text="Bitrate:" />
+                    <ChoiceBox fx:id="bitrateChoiceBox" prefWidth="100" />
+
+                    <Label text="Sample Rate:" />
+                    <ChoiceBox fx:id="sampleRateChoiceBox" prefWidth="100" />
+
+                    <Label text="Channel:" />
+                    <ChoiceBox fx:id="channelChoiceBox" prefWidth="80" />
+
+                    <Separator orientation="VERTICAL"/>
+                    <Button fx:id="convertButton" text="Convert" styleClass="btn btn-primary"/>
+                    <Button fx:id="cancelButton" text="Cancel"/>
+                    <Pane HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="clearButton" text="Clear List" styleClass="btn btn-danger"/>
+                </ToolBar>
+
+                <!-- File Table -->
+                <TableView fx:id="fileTable" prefHeight="320" prefWidth="720">
+                    <columns>
+                        <TableColumn fx:id="fileNameColumn" text="File Name" minWidth="280"/>
+                        <TableColumn fx:id="formatColumn" text="Format" minWidth="100" maxWidth="150"/>
+                        <TableColumn fx:id="sizeColumn" text="Size (KB)" minWidth="120" maxWidth="150"/>
+                        <TableColumn fx:id="progressColumn" text="Progress" minWidth="160"/>
+                        <TableColumn fx:id="statusColumn" text="Status" minWidth="140"/>
+                        <TableColumn fx:id="targetFormatColumn" text="Format" minWidth="140"/>
+                        <TableColumn fx:id="actionColumn" text="Actions" prefWidth="150"/>
+                    </columns>
+                    <placeholder>
+                        <Label text="No audio files"/>
+                    </placeholder>
+                </TableView>
+
+                <!-- Progress -->
+                <HBox spacing="10" alignment="CENTER">
+                    <Label text="Overall:"/>
+                    <ProgressBar fx:id="overallProgress" prefWidth="560" progress="0.0"/>
+                    <Label fx:id="overallProgressText" text=" "/>
+                </HBox>
+            </VBox>
         </VBox>
     </center>
-
-    <bottom>
-        <!-- Center everything at the bottom -->
-        <VBox spacing="8"
-              alignment="CENTER"
-              fillWidth="false"
-              style="-fx-padding: 8 16 16 16;"
-              BorderPane.alignment="CENTER">
-
-            <!-- Overall -->
-            <HBox spacing="10" alignment="CENTER">
-                <Label text="Overall:"/>
-                <ProgressBar fx:id="overallProgress"
-                             prefWidth="560"
-                             progress="0.0"/>
-                <Label fx:id="overallProgressText" text=" "/>
-            </HBox>
-        </VBox>
-    </bottom>
-
-
 </BorderPane>

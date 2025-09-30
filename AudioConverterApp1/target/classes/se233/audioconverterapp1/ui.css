@@ -19,7 +19,7 @@
 
 /* Buttons */
 .btn {
-    -fx-font-weight: semi-bold;
+    -fx-font-weight: 600;
     -fx-padding: 6 14 6 14;
     -fx-background-radius: 8;
     -fx-border-radius: 8;
