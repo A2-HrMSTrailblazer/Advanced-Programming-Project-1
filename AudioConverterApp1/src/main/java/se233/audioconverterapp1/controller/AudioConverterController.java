@@ -9,6 +9,7 @@ import javafx.scene.control.cell.ProgressBarTableCell;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.HBox;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import se233.audioconverterapp1.model.ConversionManager;
 import se233.audioconverterapp1.model.FileInfo;
@@ -184,13 +185,21 @@ public class AudioConverterController {
             return;
         }
 
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle("Select Output Folder");
+        File outputDir = chooser.showDialog(fileTable.getScene().getWindow());
+        if (outputDir == null) {
+            showAlert("Conversion cancelled (no output folder selected).");
+            return;
+        }
+
         String outputFormat = formatChoiceBox.getValue();
         String bitrate = bitrateChoiceBox.getValue();
         String sampleRate = sampleRateChoiceBox.getValue();
         String channel = channelChoiceBox.getValue();
-        conversionManager.startConversions(fileData, outputFormat, this::updateGlobalProgress, bitrate, sampleRate, channel);
+        conversionManager.startConversions(fileData, outputFormat, this::updateGlobalProgress, bitrate, sampleRate, channel, outputDir);
 
-        showAlert("Started conversion of " + fileData.size() + " file(s).");
+        showAlert("Started conversion of " + fileData.size() + " file(s) to" + outputFormat + " in " + outputDir.getAbsolutePath());
     }
 
     private void handleClear() {

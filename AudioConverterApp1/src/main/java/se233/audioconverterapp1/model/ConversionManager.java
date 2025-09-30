@@ -13,10 +13,10 @@ public class ConversionManager {
 
     private final Map<FileInfo, ConversionTask> activeTasks = new HashMap<>();
 
-    public void startConversions(ObservableList<FileInfo> files, String outputFormat, Runnable onProgressUpdate, String bitrate, String sampleRate, String channel) {
+    public void startConversions(ObservableList<FileInfo> files, String outputFormat, Runnable onProgressUpdate, String bitrate, String sampleRate, String channel, File outputDirectory) {
         cancelConversions();
         for (FileInfo info : files) {
-            ConversionTask task = new ConversionTask(info, info.getTargetFormat() != null ? info.getTargetFormat() : outputFormat, bitrate, sampleRate, channel);
+            ConversionTask task = new ConversionTask(info, info.getTargetFormat() != null ? info.getTargetFormat() : outputFormat, bitrate, sampleRate, channel, outputDirectory);
 
             // Update global progress after each progress update
             task.progressProperty().addListener((_, _, _) ->

@@ -22,15 +22,17 @@ public class ConversionTask extends Task<Void> {
     private final String bitrate;
     private final String sampleRate;
     private final String channel;
+    private final File outputDirectory;
 
     private final Pattern TIME_PATTERN = Pattern.compile("time=(\\d+):(\\d+):(\\d+).(\\d+)");
 
-    public ConversionTask(FileInfo fileInfo, String targetFormat, String bitrate, String sampleRate, String channel) {
+    public ConversionTask(FileInfo fileInfo, String targetFormat, String bitrate, String sampleRate, String channel, File outputDirectory) {
         this.fileInfo = fileInfo;
         this.targetFormat = targetFormat;
         this.bitrate = bitrate;
         this.sampleRate = sampleRate;
         this.channel = channel;
+        this.outputDirectory = outputDirectory;
     }
 
     @Override
@@ -51,7 +53,7 @@ public class ConversionTask extends Task<Void> {
         // Output file
         String baseName = inputFile.getName().replaceFirst("[.][^.]+$", "");
         String outputFormat = fileInfo.getTargetFormat();
-        File outputFile = new File(inputFile.getParentFile(), baseName + "." + outputFormat);
+        File outputFile = new File(outputDirectory, baseName + "." + outputFormat);
 
         try {
             List<String> command = new ArrayList<>();
