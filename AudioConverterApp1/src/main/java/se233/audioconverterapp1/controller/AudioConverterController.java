@@ -28,54 +28,31 @@ import java.util.Locale;
 public class AudioConverterController {
 
     // ==== UI Elements ====
-    @FXML
-    private TableView<FileInfo> fileTable;
-    @FXML
-    private TableColumn<FileInfo, String> fileNameColumn;
-    @FXML
-    private TableColumn<FileInfo, String> formatColumn;
-    @FXML
-    private TableColumn<FileInfo, String> sizeColumn;
-    @FXML
-    private TableColumn<FileInfo, Double> progressColumn;
-    @FXML
-    private TableColumn<FileInfo, String> statusColumn;
-    @FXML
-    private TableColumn<FileInfo, String> targetFormatColumn;
-    @FXML
-    private TableColumn<FileInfo, Void> actionColumn;
+    @FXML private TableView<FileInfo> fileTable;
+    @FXML private TableColumn<FileInfo, String> fileNameColumn;
+    @FXML private TableColumn<FileInfo, String> formatColumn;
+    @FXML private TableColumn<FileInfo, String> sizeColumn;
+    @FXML private TableColumn<FileInfo, Double> progressColumn;
+    @FXML private TableColumn<FileInfo, String> statusColumn;
+    @FXML private TableColumn<FileInfo, String> targetFormatColumn;
+    @FXML private TableColumn<FileInfo, Void> actionColumn;
 
-    @FXML
-    private ChoiceBox<String> formatChoiceBox;
-    @FXML
-    private ChoiceBox<String> bitrateChoiceBox;
-    @FXML
-    private ChoiceBox<String> sampleRateChoiceBox;
-    @FXML
-    private ChoiceBox<String> channelChoiceBox;
-    @FXML
-    private Button convertButton;
-    @FXML
-    private Button clearButton;
-    @FXML
-    private Button cancelButton;
-    @FXML
-    private Button applyFormatButton;
-    @FXML
-    private StackPane dropContainer;
-    @FXML
-    private Label dropZone;
-    @FXML
-    private ProgressBar overallProgress;
-    @FXML
-    private Label overallProgressText;
-    @FXML
-    private MenuItem setFFmpegPathMenu;
-    @FXML
-    private CheckBox darkModeToggle;
+    @FXML private ChoiceBox<String> formatChoiceBox;
+    @FXML private ChoiceBox<String> bitrateChoiceBox;
+    @FXML private ChoiceBox<String> sampleRateChoiceBox;
+    @FXML private ChoiceBox<String> channelChoiceBox;
+    @FXML private Button convertButton;
+    @FXML private Button clearButton;
+    @FXML private Button cancelButton;
+    @FXML private Button applyFormatButton;
+    @FXML private StackPane dropContainer;
+    @FXML private Label dropZone;
+    @FXML private ProgressBar overallProgress;
+    @FXML private Label overallProgressText;
+    @FXML private MenuItem setFFmpegPathMenu;
+    @FXML private CheckBox darkModeToggle;
 
-    @FXML
-    private VBox configPanel;
+    @FXML private VBox configPanel;
 
     // ==== Data + Manager ====
     private final ObservableList<FileInfo> fileData = FXCollections.observableArrayList();
@@ -114,15 +91,11 @@ public class AudioConverterController {
     // Dark Mode Setup
     private void toggleDarkMode(boolean enable) {
         var scene = dropContainer.getScene();
-        if (scene == null)
-            return;
+        if (scene == null) return;
 
         scene.getStylesheets().clear();
-        if (enable)
-            scene.getStylesheets()
-                    .add(getClass().getResource("/se233/audioconverterapp1/dark-theme.css").toExternalForm());
-        else
-            scene.getStylesheets().add(getClass().getResource("/se233/audioconverterapp1/ui.css").toExternalForm());
+        if (enable) scene.getStylesheets().add(getClass().getResource("/se233/audioconverterapp1/dark-theme.css").toExternalForm());
+        else scene.getStylesheets().add(getClass().getResource("/se233/audioconverterapp1/ui.css").toExternalForm());
     }
 
     // ---- Table setup ----
@@ -185,7 +158,8 @@ public class AudioConverterController {
                 FileChooser fileChooser = new FileChooser();
                 fileChooser.setTitle("Select Audio Files");
                 fileChooser.getExtensionFilters().add(
-                        new FileChooser.ExtensionFilter("Audio Files", "*.mp3", "*.wav", "*.m4a", "*.flac"));
+                        new FileChooser.ExtensionFilter("Audio Files", "*.mp3", "*.wav", "*.m4a", "*.flac")
+                );
                 List<File> selectedFiles = fileChooser.showOpenMultipleDialog(dropContainer.getScene().getWindow());
                 if (selectedFiles != null) {
                     selectedFiles.stream().filter(this::isAudioFile).forEach(this::addFileToTable);
@@ -198,7 +172,7 @@ public class AudioConverterController {
     private void setupActionColumn() {
         actionColumn.setCellFactory(_ -> new TableCell<>() {
             private final Button cancelBtn = new Button("Cancel");
-            private final Button clearBtn = new Button("Clear");
+            private final Button clearBtn = new Button("Delete");
 
             {
                 cancelBtn.setOnAction(_ -> {
@@ -234,67 +208,58 @@ public class AudioConverterController {
 
     // ---- Conversion handling ----
     private void handleConvert() {
-        try {
-            if (!FFmpegManager.isFFmpegAvailable()) {
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("FFmpeg Required");
-                alert.setHeaderText("FFmpeg is not configured");
-                alert.setContentText("You need to set the FFmpeg path before converting.");
+    try {
+        if (!FFmpegManager.isFFmpegAvailable()) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("FFmpeg Required");
+            alert.setHeaderText("FFmpeg is not configured");
+            alert.setContentText("You need to set the FFmpeg path before converting.");
 
-                ButtonType okButton = new ButtonType("Set Path", ButtonBar.ButtonData.OK_DONE);
-                alert.getButtonTypes().setAll(okButton, ButtonType.CANCEL);
+            ButtonType okButton = new ButtonType("Set Path", ButtonBar.ButtonData.OK_DONE);
+            alert.getButtonTypes().setAll(okButton, ButtonType.CANCEL);
 
-                alert.showAndWait().ifPresent(response -> {
-                    if (response == okButton)
-                        chooseFFmpegPath();
-                });
-                return;
-            }
-
-            if (fileData.isEmpty()) {
-                showAlert("No files to convert!");
-                return;
-            }
-
-            DirectoryChooser chooser = new DirectoryChooser();
-            chooser.setTitle("Select Output Folder");
-            File outputDir = chooser.showDialog(fileTable.getScene().getWindow());
-            if (outputDir == null) {
-                showAlert("Conversion cancelled (no output folder selected).");
-                return;
-            }
-
-            String outputFormat = formatChoiceBox.getValue();
-            String bitrate = bitrateChoiceBox.getValue();
-            String sampleRate = sampleRateChoiceBox.getValue();
-            String channel = channelChoiceBox.getValue();
-
-            // Duplicate Output Check
-            for (FileInfo file : fileData) {
-                String inputExt = getExtension(new File(file.getFilePath()));
-                if (inputExt.equalsIgnoreCase(outputFormat)) {
-                    showAlert("File \"" + file.getFileName() + "\" is already in ." + outputFormat +
-                            " format. Skipping to avoid duplicate output.");
-                    continue;
-                }
-            }
-
-            conversionManager.startConversions(
-                    fileData,
-                    outputFormat,
-                    this::updateGlobalProgress,
-                    bitrate,
-                    sampleRate,
-                    channel,
-                    outputDir);
-
-            showAlert("Started conversion of " + fileData.size() + " file(s).");
-
-        } catch (Exception e) {
-            showAlert("Conversion failed to start: " + e.getMessage());
-            e.printStackTrace();
+            alert.showAndWait().ifPresent(response -> {
+                if (response == okButton) chooseFFmpegPath();
+            });
+            return;
         }
+
+        if (fileData.isEmpty()) {
+            showAlert("No files to convert!");
+            return;
+        }
+
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle("Select Output Folder");
+        File outputDir = chooser.showDialog(fileTable.getScene().getWindow());
+        if (outputDir == null) {
+            showAlert("Conversion cancelled (no output folder selected).");
+            return;
+        }
+
+        String outputFormat = formatChoiceBox.getValue();
+        String bitrate = bitrateChoiceBox.getValue();
+        String sampleRate = sampleRateChoiceBox.getValue();
+        String channel = channelChoiceBox.getValue();
+
+        conversionManager.startConversions(
+                fileData,
+                outputFormat,
+                this::updateGlobalProgress,
+                bitrate,
+                sampleRate,
+                channel,
+                outputDir
+        );
+
+        showAlert("Started conversion of " + fileData.size() + " file(s).");
+
+    } catch (Exception e) {
+        showAlert("Conversion failed to start: " + e.getMessage());
+        e.printStackTrace();
     }
+}
+
 
     private void handleClear() {
         fileData.clear();
@@ -334,7 +299,8 @@ public class AudioConverterController {
         fileData.add(new FileInfo(
                 file.getAbsolutePath(),
                 getExtension(file),
-                formatSize(file.length() / 1024)));
+                formatSize(file.length() / 1024)
+        ));
 
         if (!fileData.isEmpty()) {
             dropContainer.setMinHeight(60);
@@ -361,18 +327,14 @@ public class AudioConverterController {
     }
 
     private void chooseFFmpegPath() {
-        try {
-            FileChooser chooser = new FileChooser();
-            chooser.setTitle("Select FFmpeg Executable");
-            chooser.getExtensionFilters().add(
-                    new FileChooser.ExtensionFilter("FFmpeg Executable", "ffmpeg.exe", "ffmpeg"));
-            File file = chooser.showOpenDialog(fileTable.getScene().getWindow());
-            if (file != null) {
-                FFmpegManager.setFFmpegPath(file.getAbsolutePath());
-            }
-        } catch (Exception e) {
-            showAlert("Failed to set FFmpeg path: " + e.getMessage());
-            e.printStackTrace();
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Select FFmpeg Executable");
+        chooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("FFmpeg Executable", "ffmpeg.exe", "ffmpeg")
+        );
+        File file = chooser.showOpenDialog(fileTable.getScene().getWindow());
+        if (file != null) {
+            FFmpegManager.setFFmpegPath(file.getAbsolutePath());
         }
     }
 

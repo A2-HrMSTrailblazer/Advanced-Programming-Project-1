@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+
+<HBox alignment="CENTER_LEFT" spacing="10" styleClass="header-bar"
+      xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <Label text="Audio Converter App" styleClass="ui-title"/>
+        <Label text="• Supported formats: MP3, WAV, M4A, FLAC" styleClass="formats-tip"/>
+        <Pane HBox.hgrow="ALWAYS"/>
+        <CheckBox fx:id="darkModeToggle" text="Dark Mode" styleClass="dark-toggle"/>
+    </children>
+</HBox>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="16" alignment="TOP_CENTER" xmlns="http://javafx.com/javafx/17.0.2-ea"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="se233.audioconverterapp1.controller.MainContentController">
+
+    <ToolBar styleClass="topbar" prefWidth="Infinity">
+        <items>
+            <Label text="Output Format:"/>
+            <ChoiceBox fx:id="formatChoiceBox" prefWidth="120"/>
+            <Button fx:id="applyFormatButton" text="Apply Global Format" styleClass="btn, btn-secondary"/>
+            <Separator orientation="VERTICAL" visible="false"/>
+            <Label text="Bitrate:"/>
+            <ChoiceBox fx:id="bitrateChoiceBox" prefWidth="100"/>
+            <Label text="Sample Rate:"/>
+            <ChoiceBox fx:id="sampleRateChoiceBox" prefWidth="100"/>
+            <Label text="Channel:"/>
+            <ChoiceBox fx:id="channelChoiceBox" prefWidth="80"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Button fx:id="convertButton" text="Convert" styleClass="btn, btn-primary"/>
+            <Button fx:id="cancelButton" text="Cancel"/>
+            <Button fx:id="clearButton" text="Clear List" styleClass="btn, btn-danger"/>
+        </items>
+    </ToolBar>
+
+    <TableView fx:id="fileTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="fileNameColumn" text="File Name"/>
+            <TableColumn fx:id="formatColumn" text="Format"/>
+            <TableColumn fx:id="sizeColumn" text="Size (KB)"/>
+            <TableColumn fx:id="progressColumn" text="Progress"/>
+            <TableColumn fx:id="statusColumn" text="Status"/>
+            <TableColumn fx:id="targetFormatColumn" text="Format"/>
+            <TableColumn fx:id="actionColumn" text="Actions"/>
+        </columns>
+        <placeholder>
+            <Label text="No audio files"/>
+        </placeholder>
+    </TableView>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT" style="-fx-padding: 5 0 0 0;">
+        <Label text="Overall:" styleClass="overall-label"/>
+        <ProgressBar fx:id="overallProgress" prefWidth="560" progress="0.0"/>
+        <Label fx:id="overallProgressText" text=" "/>
+    </HBox>
+</VBox>
