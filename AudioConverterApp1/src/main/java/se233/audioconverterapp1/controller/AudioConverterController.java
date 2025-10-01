@@ -2,6 +2,7 @@ package se233.audioconverterapp1.controller;
 
 import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -48,8 +49,8 @@ public class AudioConverterController {
     @FXML private Label dropZone;
     @FXML private ProgressBar overallProgress;
     @FXML private Label overallProgressText;
-    @FXML private Label ffmpegWarningLabel;
     @FXML private MenuItem setFFmpegPathMenu;
+    @FXML private CheckMenuItem darkModeToggle;
 
     @FXML private VBox configPanel;
 
@@ -67,11 +68,34 @@ public class AudioConverterController {
         setupActionColumn();
         setupAudioSettings();
 
-        // FFmpeg setup
-        setFFmpegPathMenu.setOnAction(_ -> chooseFFmpegPath());
-        updateFFmpegWarning();
+        fileData.addListener((ListChangeListener<FileInfo>) _ -> {
+            if (fileData.isEmpty()) {
+                resetDropContainer();
+            }
+        });
 
         overallProgress.setProgress(0);
+
+        darkModeToggle.setOnAction(_ -> toggleDarkMode(darkModeToggle.isSelected()));
+    }
+
+    // Reset Drop Container if there is no file
+    private void resetDropContainer() {
+        dropContainer.setMinHeight(180);
+        dropContainer.setMaxHeight(200);
+        dropZone.setText("Drop your audio files here or double click to select");
+        configPanel.setVisible(false);
+        configPanel.setManaged(false);
+    }
+
+    // Dark Mode Setup
+    private void toggleDarkMode(boolean enable) {
+        var scene = dropContainer.getScene();
+        if (scene == null) return;
+
+        scene.getStylesheets().clear();
+        if (enable) scene.getStylesheets().add(getClass().getResource("/se233/audioconverterapp1/dark-theme.css").toExternalForm());
+        else scene.getStylesheets().add(getClass().getResource("/se233/audioconverterapp1/ui.css").toExternalForm());
     }
 
     // ---- Table setup ----
@@ -90,6 +114,7 @@ public class AudioConverterController {
 
         fileTable.setItems(fileData);
         fileTable.setEditable(true);
+        fileTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
     // ---- Format choice box ----
@@ -184,7 +209,18 @@ public class AudioConverterController {
     // ---- Conversion handling ----
     private void handleConvert() {
         if (!FFmpegManager.isFFmpegAvailable()) {
-            showAlert("FFmpeg is not set. Please go to Settings → Set FFmpeg Path.");
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("FFmpeg Required");
+            alert.setHeaderText("FFmpeg is not configured");
+            alert.setContentText("You need to set the FFmpeg path before converting.");
+
+            ButtonType okButton = new ButtonType("Set Path", ButtonBar.ButtonData.OK_DONE);
+            alert.getButtonTypes().setAll(okButton, ButtonType.CANCEL);
+
+            alert.showAndWait().ifPresent(response -> {
+                if (response == okButton) chooseFFmpegPath();
+            });
+
             return;
         }
         if (fileData.isEmpty()) {
@@ -271,15 +307,6 @@ public class AudioConverterController {
         return nf.format(sizeKB) + " KB";
     }
 
-    // ---- FFmpeg setup ----
-    private void updateFFmpegWarning() {
-        if (FFmpegManager.isFFmpegAvailable()) {
-            ffmpegWarningLabel.setText("");
-        } else {
-            ffmpegWarningLabel.setText("FFmpeg not set! Go to Settings → Set Path");
-        }
-    }
-
     private void chooseFFmpegPath() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Select FFmpeg Executable");
@@ -289,7 +316,6 @@ public class AudioConverterController {
         File file = chooser.showOpenDialog(fileTable.getScene().getWindow());
         if (file != null) {
             FFmpegManager.setFFmpegPath(file.getAbsolutePath());
-            updateFFmpegWarning();
         }
     }
 

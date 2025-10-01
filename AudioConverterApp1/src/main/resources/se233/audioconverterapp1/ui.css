@@ -4,48 +4,62 @@
     -fx-font-size: 13px;
 }
 
+/* Menu Bar */
+.menu-bar-container {
+    -fx-background-color: #f1f5f9;
+    -fx-padding: 6 12;
+}
+
+.menu-bar .label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+/* Header Bar */
+.header-bar {
+    -fx-padding: 10 16;
+}
+
 /* Title */
 .ui-title {
-    -fx-font-size: 20px;
+    -fx-font-size: 22px;
     -fx-font-weight: bold;
-    -fx-padding: 10 16 0 16;
+    -fx-text-fill: #1f2937;
+}
+
+.formats-tip {
+    -fx-text-fill: #64748b;
+    -fx-font-size: 12px;
+    -fx-padding: 2 0 0 0;
 }
 
 /* Toolbar */
 .topbar {
     -fx-background-color: transparent;
-    -fx-padding: 8 16 8 16;
+    -fx-padding: 8 16;
 }
 
 /* Buttons */
 .btn {
     -fx-font-weight: 600;
-    -fx-padding: 6 14 6 14;
+    -fx-padding: 6 14;
     -fx-background-radius: 8;
     -fx-border-radius: 8;
 }
 
-.btn:hover {
-    -fx-opacity: 0.95;
-}
+.btn:hover { -fx-opacity: 0.95; }
 
 .btn-primary {
     -fx-background-color: #3b82f6;
     -fx-text-fill: white;
 }
-
-.btn-primary:pressed {
-    -fx-background-color: #2563eb;
-}
+.btn-primary:pressed { -fx-background-color: #2563eb; }
 
 .btn-danger {
     -fx-background-color: #ef4444;
     -fx-text-fill: white;
 }
-
-.btn-danger:pressed {
-    -fx-background-color: #dc2626;
-}
+.btn-danger:pressed { -fx-background-color: #dc2626; }
 
 /* Dropzone */
 .dropzone {
@@ -53,7 +67,7 @@
     -fx-background-radius: 14;
     -fx-border-color: #a8b3cf;
     -fx-border-radius: 14;
-    -fx-border-style: segments(10, 8) line-cap round; /* เส้นประสวย ๆ */
+    -fx-border-style: segments(10, 8) line-cap round;
     -fx-border-width: 2;
 }
 
@@ -72,30 +86,25 @@
 .table-view .column-header-background {
     -fx-background-color: linear-gradient(to bottom, #eef2f7, #e6ebf2);
 }
-
 .table-view .column-header .label {
     -fx-font-weight: bold;
 }
 
-.tip-text {
-    -fx-text-fill: #64748b;
-}
-.ui-title {
-    -fx-font-size: 22px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #1f2937;
-    -fx-padding: 0 0 5 0;
+/* Warning Bar */
+.warning-bar {
+    -fx-background-color: #fee2e2;
+    -fx-padding: 8 12;
+    -fx-background-radius: 6;
 }
 
-/* overall bar text */
+/* Warning label */
+.warning-label {
+    -fx-text-fill: red;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+/* Progress Text */
 #overallProgressText {
     -fx-text-fill: #475569;
 }
-
-.formats-tip {
-    -fx-text-fill: #64748b;
-    -fx-font-size: 12px;
-    -fx-padding: 2 0 0 0;
-}
-
-

@@ -1,10 +1,10 @@
-/* Base */
 .root {
+    -fx-background-color: #111827;
+    -fx-text-fill: #f9fafb;
     -fx-font-family: "Inter", "Segoe UI", "SF Pro Text", "Tahoma", sans-serif;
     -fx-font-size: 13px;
 }
 
-/* Menu Bar */
 .menu-bar-container {
     -fx-background-color: #f1f5f9;
     -fx-padding: 6 12;
@@ -15,31 +15,27 @@
     -fx-font-weight: bold;
 }
 
-/* Header Bar */
 .header-bar {
     -fx-padding: 10 16;
 }
 
-/* Title */
 .ui-title {
+    -fx-text-fill: #f9fafb;
     -fx-font-size: 22px;
     -fx-font-weight: bold;
-    -fx-text-fill: #1f2937;
 }
 
 .formats-tip {
-    -fx-text-fill: #64748b;
+    -fx-text-fill: #9ca3af;
     -fx-font-size: 12px;
     -fx-padding: 2 0 0 0;
 }
 
-/* Toolbar */
-.topbar {
-    -fx-background-color: transparent;
+.topbar, .menu-bar-container {
+    -fx-background-color: #1f2937;
     -fx-padding: 8 16;
 }
 
-/* Buttons */
 .btn {
     -fx-font-weight: 600;
     -fx-padding: 6 14;
@@ -50,29 +46,28 @@
 .btn:hover { -fx-opacity: 0.95; }
 
 .btn-primary {
-    -fx-background-color: #3b82f6;
+    -fx-background-color: #2563eb;
     -fx-text-fill: white;
 }
+
 .btn-primary:pressed { -fx-background-color: #2563eb; }
 
 .btn-danger {
-    -fx-background-color: #ef4444;
+    -fx-background-color: #dc2626;
     -fx-text-fill: white;
 }
-.btn-danger:pressed { -fx-background-color: #dc2626; }
 
-/* Dropzone */
 .dropzone {
-    -fx-background-color: #f5f7fb;
-    -fx-background-radius: 14;
-    -fx-border-color: #a8b3cf;
+    -fx-background-color: #1e293b;
+    -fx-border-color: #4b5563;
     -fx-border-radius: 14;
     -fx-border-style: segments(10, 8) line-cap round;
     -fx-border-width: 2;
+    -fx-background-radius: 14;
 }
 
 .dropzone-text {
-    -fx-text-fill: #475569;
+    -fx-text-fill: #e5e7eb;
     -fx-font-size: 14px;
     -fx-padding: 18;
 }
@@ -82,29 +77,32 @@
     -fx-border-color: #3b82f6;
 }
 
-/* Table */
-.table-view .column-header-background {
-    -fx-background-color: linear-gradient(to bottom, #eef2f7, #e6ebf2);
+.table-view {
+    -fx-text-fill: #f9fafb;
 }
+
+.table-view .column-header-background {
+    -fx-background-color: linear-gradient(to bottom, #374151, #011747);
+}
+
 .table-view .column-header .label {
+    -fx-text-fill: #000000;
     -fx-font-weight: bold;
 }
 
-/* Warning Bar */
 .warning-bar {
     -fx-background-color: #fee2e2;
     -fx-padding: 8 12;
     -fx-background-radius: 6;
+    -fx-text-fill: #fee2e2;
 }
 
-/* Warning label */
 .warning-label {
     -fx-text-fill: red;
     -fx-font-weight: bold;
     -fx-font-size: 14px;
 }
 
-/* Progress Text */
 #overallProgressText {
     -fx-text-fill: #475569;
 }
