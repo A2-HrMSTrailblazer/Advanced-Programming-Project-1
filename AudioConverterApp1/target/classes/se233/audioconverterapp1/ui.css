@@ -15,6 +15,11 @@
     -fx-font-weight: bold;
 }
 
+.dark-toggle {
+    -fx-text-fill: #111827;
+    -fx-font-weight: 600;
+}
+
 /* Header Bar */
 .header-bar {
     -fx-padding: 10 16;
@@ -83,7 +88,7 @@
 }
 
 /* Table */
-.table-view .column-header-background {
+.table-view .column-header {
     -fx-background-color: linear-gradient(to bottom, #eef2f7, #e6ebf2);
 }
 .table-view .column-header .label {

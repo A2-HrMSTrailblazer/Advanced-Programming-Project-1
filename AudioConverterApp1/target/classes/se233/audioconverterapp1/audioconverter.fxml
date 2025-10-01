@@ -10,21 +10,14 @@
     <!-- Top: App Title + Settings -->
     <top>
         <VBox>
-            <!-- Settings Menu -->
-            <HBox styleClass="menu-bar-container">
-                <MenuBar styleClass="menu-bar">
-                    <Menu text="Settings">
-                        <MenuItem fx:id="setFFmpegPathMenu" text="Set FFmpeg Path"/>
-                        <SeparatorMenuItem/>
-                        <CheckMenuItem fx:id="darkModeToggle" text="Dark Mode"/>
-                    </Menu>
-                </MenuBar>
-            </HBox>
-
             <!-- App Title -->
             <HBox alignment="CENTER_LEFT" spacing="10" styleClass="header-bar">
                 <Label text="Audio Converter App" styleClass="ui-title"/>
                 <Label text="• Supported formats: MP3, WAV, M4A, FLAC" styleClass="formats-tip"/>
+
+                <Pane HBox.hgrow="ALWAYS" />
+
+                <CheckBox fx:id="darkModeToggle" text="Dark Mode" styleClass="dark-toggle" /> 
             </HBox>
         </VBox>
     </top>
@@ -58,9 +51,9 @@
                 <ToolBar styleClass="topbar" prefWidth="Infinity">
                     <Label text="Output Format:"/>
                     <ChoiceBox fx:id="formatChoiceBox" prefWidth="120"/>
-                    <Button fx:id="applyFormatButton" text="Apply Global Format"/>
+                    <Button fx:id="applyFormatButton" text="Apply Global Format" styleClass="btn btn-secondary" />
 
-                    <Separator orientation="VERTICAL"/>
+                    <Separator orientation="VERTICAL" visible="false" managed="false" />
                     <Label text="Bitrate:"/>
                     <ChoiceBox fx:id="bitrateChoiceBox" prefWidth="100"/>
 
@@ -94,7 +87,7 @@
 
                 <!-- Progress at Bottom -->
                 <HBox spacing="10" alignment="CENTER_RIGHT" style="-fx-padding: 5 0 0 0;">
-                    <Label text="Overall:"/>
+                    <Label text="Overall:" styleClass="overall-label" />
                     <ProgressBar fx:id="overallProgress" prefWidth="560" progress="0.0"/>
                     <Label fx:id="overallProgressText" text=" "/>
                 </HBox>

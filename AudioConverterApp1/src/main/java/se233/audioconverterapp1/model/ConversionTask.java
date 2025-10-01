@@ -59,8 +59,11 @@ public class ConversionTask extends Task<Void> {
             List<String> command = new ArrayList<>();
             command.add(ffmpegPath);
             command.add("-y");
+            command.add("-hide_banner");
+            command.add("-stats");
             command.add("-i");
             command.add(inputFile.getAbsolutePath());
+            command.add("-vn");
 
             if (bitrate != null && !bitrate.isBlank()) {
                 command.add("-b:a");
@@ -73,8 +76,9 @@ public class ConversionTask extends Task<Void> {
             }
 
             if (channel != null && !channel.isBlank()) {
+                String channelValue = channel.equalsIgnoreCase("Mono") ? "1" : "2";
                 command.add("-ac");
-                command.add(channel);
+                command.add(channelValue);
             }
 
             if ("m4a".equalsIgnoreCase(targetFormat)) {
