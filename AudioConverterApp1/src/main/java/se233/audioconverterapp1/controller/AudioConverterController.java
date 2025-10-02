@@ -199,8 +199,8 @@ public class AudioConverterController {
         bitrateChoiceBox.setItems(FXCollections.observableArrayList("128k", "192k", "256k", "320k"));
         bitrateChoiceBox.setValue("192k");
 
-        sampleRateChoiceBox.setItems(FXCollections.observableArrayList("44100", "48000", "96000"));
-        sampleRateChoiceBox.setValue("44100");
+        sampleRateChoiceBox.setItems(FXCollections.observableArrayList("44100Hz", "48000Hz", "96000Hz"));
+        sampleRateChoiceBox.setValue("44100Hz");
 
         channelChoiceBox.setItems(FXCollections.observableArrayList("Mono", "Stereo"));
         channelChoiceBox.setValue("Stereo");

@@ -51,12 +51,12 @@
                 <ToolBar styleClass="topbar" prefWidth="Infinity">
                     <Label text="Output Format:"/>
                     <ChoiceBox fx:id="formatChoiceBox" prefWidth="120"/>
-                    <Button fx:id="applyFormatButton" text="Apply Global Format" styleClass="btn btn-secondary" />
-
-                    <Separator orientation="VERTICAL" visible="false" managed="false" />
+                    <Button fx:id="applyFormatButton" text="Apply Global Format" styleClass="button-primary" />
+                    
                     <Label text="Bitrate:"/>
                     <ChoiceBox fx:id="bitrateChoiceBox" prefWidth="100"/>
-
+                    
+                    <Separator orientation="VERTICAL" visible="true" managed="false" />
                     <Label text="Sample Rate:"/>
                     <ChoiceBox fx:id="sampleRateChoiceBox" prefWidth="100"/>
 
@@ -64,9 +64,9 @@
                     <ChoiceBox fx:id="channelChoiceBox" prefWidth="80"/>
 
                     <Pane HBox.hgrow="ALWAYS"/>
-                    <Button fx:id="convertButton" text="Convert" styleClass="btn btn-primary"/>
+                    <Button fx:id="convertButton" text="Convert" styleClass="button-primary"/>
                     <Button fx:id="cancelButton" text="Cancel"/>
-                    <Button fx:id="clearButton" text="Clear List" styleClass="btn btn-danger"/>
+                    <Button fx:id="clearButton" text="Clear List" styleClass="button-danger"/>
                 </ToolBar>
 
                 <!-- File Table -->
