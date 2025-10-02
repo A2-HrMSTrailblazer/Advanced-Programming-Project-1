@@ -90,7 +90,7 @@ public class ConversionTask extends Task<Void> {
 
             double totalSeconds = FFprobeHelper.getDurationSeconds(inputFile);
             if (totalSeconds <= 0) {
-                System.out.println("[FFmpeg] Could not detect duration, progress will be fake.");
+                // System.out.println("[FFmpeg] Could not detect duration, progress will be fake.");
                 totalSeconds = 1.0;
             }
 
