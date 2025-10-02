@@ -11,16 +11,19 @@ import java.io.File;
 import java.util.List;
 import java.text.NumberFormat;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 public class FileImportController {
     private final StackPane dropContainer;
     private final Label dropZone;
-    private final TableController tableController;
+    private final Consumer<FileInfo> fileConsumer;
+    private final Runnable showConfigPanelCallBack;
 
-    public FileImportController(StackPane dropContainer, Label dropZone, TableController tableController) {
+    public FileImportController(StackPane dropContainer, Label dropZone, Consumer<FileInfo> fileConsumer, Runnable showConfigPanelCallBack) {
         this.dropContainer = dropContainer;
         this.dropZone = dropZone;
-        this.tableController = tableController;
+        this.fileConsumer = fileConsumer;
+        this.showConfigPanelCallBack = showConfigPanelCallBack;
     }
 
     public void setupFileImport() {
@@ -35,7 +38,7 @@ public class FileImportController {
         dropContainer.setOnDragDropped(event -> {
             Dragboard db = event.getDragboard();
             if (db.hasFiles()) {
-                db.getFiles().stream().filter(this::isAudioFile).forEach(this::addFileToTable);
+                db.getFiles().stream().filter(this::isAudioFile).forEach(this::addFile);
                 event.setDropCompleted(true);
             } else {
                 event.setDropCompleted(false);
@@ -53,23 +56,24 @@ public class FileImportController {
                 );
                 List<File> selectedFiles = fileChooser.showOpenMultipleDialog(dropContainer.getScene().getWindow());
                 if (selectedFiles != null) {
-                    selectedFiles.stream().filter(this::isAudioFile).forEach(this::addFileToTable);
+                    selectedFiles.stream().filter(this::isAudioFile).forEach(this::addFile);
                 }
             }
         });
     }
 
-    private void addFileToTable(File file) {
+    private void addFile(File file) {
         FileInfo fileInfo = new FileInfo(
                 file.getAbsolutePath(),
                 getExtension(file),
                 formatSize(file.length() / 1024)
         );
-        tableController.getFileData().add(fileInfo);
+        fileConsumer.accept(fileInfo);
 
         dropContainer.setMinHeight(60);
         dropContainer.setMaxHeight(80);
         dropZone.setText("Add more files by dropping here or double clicking");
+        showConfigPanelCallBack.run();
     }
 
     private boolean isAudioFile(File file) {

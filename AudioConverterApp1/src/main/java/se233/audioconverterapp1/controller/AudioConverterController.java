@@ -6,11 +6,6 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.ChoiceBoxTableCell;
-import javafx.scene.control.cell.ProgressBarTableCell;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.TransferMode;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
@@ -22,9 +17,6 @@ import se233.audioconverterapp1.util.FFmpegManager;
 import se233.audioconverterapp1.view.ThemeController;
 
 import java.io.File;
-import java.text.NumberFormat;
-import java.util.List;
-import java.util.Locale;
 
 public class AudioConverterController {
 
@@ -85,15 +77,17 @@ public class AudioConverterController {
     // ==== Subcontrollers ====
     private ThemeController themeController;
     private TableController tableController;
+    private FileImportController fileImportController;
 
     // ==== Initialization ====
     @FXML
     public void initialize() {
         tableController = new TableController(fileTable, fileNameColumn, formatColumn, sizeColumn, progressColumn, statusColumn, targetFormatColumn, actionColumn, conversionManager);
+        fileImportController = new FileImportController(dropContainer, dropZone, fileData::add, this::showConfigPanel);
         tableController.setupTable(fileData);
+        fileImportController.setupFileImport();
         setupFormatChoiceBox();
         setupButtons();
-        setupFileImport();
         setupAudioSettings();
 
         fileData.addListener((ListChangeListener<FileInfo>) _ -> {
@@ -148,40 +142,40 @@ public class AudioConverterController {
     }
 
     // ---- File import ----
-    private void setupFileImport() {
-        // Drag & drop
-        dropContainer.setOnDragOver(event -> {
-            if (event.getGestureSource() != dropContainer && event.getDragboard().hasFiles()) {
-                event.acceptTransferModes(TransferMode.COPY);
-            }
-            event.consume();
-        });
+    // private void setupFileImport() {
+    //     // Drag & drop
+    //     dropContainer.setOnDragOver(event -> {
+    //         if (event.getGestureSource() != dropContainer && event.getDragboard().hasFiles()) {
+    //             event.acceptTransferModes(TransferMode.COPY);
+    //         }
+    //         event.consume();
+    //     });
 
-        dropContainer.setOnDragDropped(event -> {
-            Dragboard db = event.getDragboard();
-            if (db.hasFiles()) {
-                db.getFiles().stream().filter(this::isAudioFile).forEach(this::addFileToTable);
-                event.setDropCompleted(true);
-            } else {
-                event.setDropCompleted(false);
-            }
-            event.consume();
-        });
+    //     dropContainer.setOnDragDropped(event -> {
+    //         Dragboard db = event.getDragboard();
+    //         if (db.hasFiles()) {
+    //             db.getFiles().stream().filter(this::isAudioFile).forEach(this::addFileToTable);
+    //             event.setDropCompleted(true);
+    //         } else {
+    //             event.setDropCompleted(false);
+    //         }
+    //         event.consume();
+    //     });
 
-        // Double click → FileChooser
-        dropContainer.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2) {
-                FileChooser fileChooser = new FileChooser();
-                fileChooser.setTitle("Select Audio Files");
-                fileChooser.getExtensionFilters().add(
-                        new FileChooser.ExtensionFilter("Audio Files", "*.mp3", "*.wav", "*.m4a", "*.flac"));
-                List<File> selectedFiles = fileChooser.showOpenMultipleDialog(dropContainer.getScene().getWindow());
-                if (selectedFiles != null) {
-                    selectedFiles.stream().filter(this::isAudioFile).forEach(this::addFileToTable);
-                }
-            }
-        });
-    }
+    //     // Double click → FileChooser
+    //     dropContainer.setOnMouseClicked(event -> {
+    //         if (event.getClickCount() == 2) {
+    //             FileChooser fileChooser = new FileChooser();
+    //             fileChooser.setTitle("Select Audio Files");
+    //             fileChooser.getExtensionFilters().add(
+    //                     new FileChooser.ExtensionFilter("Audio Files", "*.mp3", "*.wav", "*.m4a", "*.flac"));
+    //             List<File> selectedFiles = fileChooser.showOpenMultipleDialog(dropContainer.getScene().getWindow());
+    //             if (selectedFiles != null) {
+    //                 selectedFiles.stream().filter(this::isAudioFile).forEach(this::addFileToTable);
+    //             }
+    //         }
+    //     });
+    // }
 
     // ---- Action column (per-file Cancel/Clear) ----
     // private void setupActionColumn() {
@@ -309,35 +303,35 @@ public class AudioConverterController {
     }
 
     // ---- File helpers ----
-    private void addFileToTable(File file) {
-        fileData.add(new FileInfo(
-                file.getAbsolutePath(),
-                getExtension(file),
-                formatSize(file.length() / 1024)));
+    // private void addFileToTable(File file) {
+    //     fileData.add(new FileInfo(
+    //             file.getAbsolutePath(),
+    //             getExtension(file),
+    //             formatSize(file.length() / 1024)));
 
-        if (!fileData.isEmpty()) {
-            dropContainer.setMinHeight(60);
-            dropContainer.setMaxHeight(80);
-            dropZone.setText("Add more files by dropping here or double clicking");
-            showConfigPanel();
-        }
-    }
+    //     if (!fileData.isEmpty()) {
+    //         dropContainer.setMinHeight(60);
+    //         dropContainer.setMaxHeight(80);
+    //         dropZone.setText("Add more files by dropping here or double clicking");
+    //         showConfigPanel();
+    //     }
+    // }
 
-    private boolean isAudioFile(File file) {
-        String name = file.getName().toLowerCase();
-        return name.endsWith(".mp3") || name.endsWith(".wav")
-                || name.endsWith(".m4a") || name.endsWith(".flac");
-    }
+    // private boolean isAudioFile(File file) {
+    //     String name = file.getName().toLowerCase();
+    //     return name.endsWith(".mp3") || name.endsWith(".wav")
+    //             || name.endsWith(".m4a") || name.endsWith(".flac");
+    // }
 
-    private String getExtension(File file) {
-        int dot = file.getName().lastIndexOf('.');
-        return (dot == -1) ? "" : file.getName().substring(dot + 1);
-    }
+    // private String getExtension(File file) {
+    //     int dot = file.getName().lastIndexOf('.');
+    //     return (dot == -1) ? "" : file.getName().substring(dot + 1);
+    // }
 
-    private String formatSize(long sizeKB) {
-        NumberFormat nf = NumberFormat.getInstance(Locale.US);
-        return nf.format(sizeKB) + " KB";
-    }
+    // private String formatSize(long sizeKB) {
+    //     NumberFormat nf = NumberFormat.getInstance(Locale.US);
+    //     return nf.format(sizeKB) + " KB";
+    // }
 
     private void chooseFFmpegPath() {
         FileChooser chooser = new FileChooser();
