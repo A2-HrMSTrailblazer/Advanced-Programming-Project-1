@@ -20,7 +20,7 @@ public class TableController {
     private final TableColumn<FileInfo, Void> actionColumn;
 
     private final ObservableList<FileInfo> fileData = FXCollections.observableArrayList();
-    private final ConversionManager conversionManager = new ConversionManager();
+    private final ConversionManager conversionManager;
 
     public TableController(TableView<FileInfo> fileTable,
                            TableColumn<FileInfo, String> fileNameColumn,
@@ -29,7 +29,8 @@ public class TableController {
                            TableColumn<FileInfo, Double> progressColumn,
                            TableColumn<FileInfo, String> statusColumn,
                            TableColumn<FileInfo, String> targetFormatColumn,
-                           TableColumn<FileInfo, Void> actionColumn) {
+                           TableColumn<FileInfo, Void> actionColumn,
+                           ConversionManager conversionManager) {
         this.fileTable = fileTable;
         this.fileNameColumn = fileNameColumn;
         this.formatColumn = formatColumn;
@@ -38,26 +39,36 @@ public class TableController {
         this.statusColumn = statusColumn;
         this.targetFormatColumn = targetFormatColumn;
         this.actionColumn = actionColumn;
+        this.conversionManager = conversionManager;
     }
 
-    public void setupTable() {
-        fileNameColumn.setCellValueFactory(cell -> cell.getValue().fileNameProperty());
-        formatColumn.setCellValueFactory(cell -> cell.getValue().formatProperty());
-        sizeColumn.setCellValueFactory(cell -> cell.getValue().sizeProperty());
-        statusColumn.setCellValueFactory(cell -> cell.getValue().statusProperty());
-
-        progressColumn.setCellValueFactory(cell -> cell.getValue().progressProperty().asObject());
-        progressColumn.setCellFactory(ProgressBarTableCell.forTableColumn());
-
-        targetFormatColumn.setCellValueFactory(cell -> cell.getValue().targetFormatProperty());
-        targetFormatColumn.setCellFactory(ChoiceBoxTableCell.forTableColumn("mp3", "wav", "m4a", "flac"));
-        targetFormatColumn.setEditable(true);
-
+    public void setupTable(ObservableList<FileInfo> fileData) {
+        setupGeneralInfoColumn();
+        setupProgressColumn();
+        setupTargetFormatColumn();
         setupActionColumn();
 
         fileTable.setItems(fileData);
         fileTable.setEditable(true);
         fileTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+    }
+
+    private void setupGeneralInfoColumn() {
+        fileNameColumn.setCellValueFactory(cell -> cell.getValue().fileNameProperty());
+        formatColumn.setCellValueFactory(cell -> cell.getValue().formatProperty());
+        sizeColumn.setCellValueFactory(cell -> cell.getValue().sizeProperty());
+        statusColumn.setCellValueFactory(cell -> cell.getValue().statusProperty());
+    }
+
+    private void setupProgressColumn() {
+        progressColumn.setCellValueFactory(cell -> cell.getValue().progressProperty().asObject());
+        progressColumn.setCellFactory(ProgressBarTableCell.forTableColumn());
+    }
+
+    private void setupTargetFormatColumn() {
+        targetFormatColumn.setCellValueFactory(cell -> cell.getValue().targetFormatProperty());
+        targetFormatColumn.setCellFactory(ChoiceBoxTableCell.forTableColumn("mp3", "wav", "m4a", "flac"));
+        targetFormatColumn.setEditable(true);
     }
 
     private void setupActionColumn() {

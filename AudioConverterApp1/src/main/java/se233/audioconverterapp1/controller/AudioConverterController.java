@@ -84,15 +84,16 @@ public class AudioConverterController {
 
     // ==== Subcontrollers ====
     private ThemeController themeController;
+    private TableController tableController;
 
     // ==== Initialization ====
     @FXML
     public void initialize() {
-        setupTable();
+        tableController = new TableController(fileTable, fileNameColumn, formatColumn, sizeColumn, progressColumn, statusColumn, targetFormatColumn, actionColumn, conversionManager);
+        tableController.setupTable(fileData);
         setupFormatChoiceBox();
         setupButtons();
         setupFileImport();
-        setupActionColumn();
         setupAudioSettings();
 
         fileData.addListener((ListChangeListener<FileInfo>) _ -> {
@@ -114,23 +115,23 @@ public class AudioConverterController {
     }
 
     // ---- Table setup ----
-    private void setupTable() {
-        fileNameColumn.setCellValueFactory(cell -> cell.getValue().fileNameProperty());
-        formatColumn.setCellValueFactory(cell -> cell.getValue().formatProperty());
-        sizeColumn.setCellValueFactory(cell -> cell.getValue().sizeProperty());
-        statusColumn.setCellValueFactory(cell -> cell.getValue().statusProperty());
+    // private void setupTable() {
+    //     fileNameColumn.setCellValueFactory(cell -> cell.getValue().fileNameProperty());
+    //     formatColumn.setCellValueFactory(cell -> cell.getValue().formatProperty());
+    //     sizeColumn.setCellValueFactory(cell -> cell.getValue().sizeProperty());
+    //     statusColumn.setCellValueFactory(cell -> cell.getValue().statusProperty());
 
-        progressColumn.setCellValueFactory(cell -> cell.getValue().progressProperty().asObject());
-        progressColumn.setCellFactory(ProgressBarTableCell.forTableColumn());
+    //     progressColumn.setCellValueFactory(cell -> cell.getValue().progressProperty().asObject());
+    //     progressColumn.setCellFactory(ProgressBarTableCell.forTableColumn());
 
-        targetFormatColumn.setCellValueFactory(cell -> cell.getValue().targetFormatProperty());
-        targetFormatColumn.setCellFactory(ChoiceBoxTableCell.forTableColumn("mp3", "wav", "m4a", "flac"));
-        targetFormatColumn.setEditable(true);
+    //     targetFormatColumn.setCellValueFactory(cell -> cell.getValue().targetFormatProperty());
+    //     targetFormatColumn.setCellFactory(ChoiceBoxTableCell.forTableColumn("mp3", "wav", "m4a", "flac"));
+    //     targetFormatColumn.setEditable(true);
 
-        fileTable.setItems(fileData);
-        fileTable.setEditable(true);
-        fileTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-    }
+    //     fileTable.setItems(fileData);
+    //     fileTable.setEditable(true);
+    //     fileTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+    // }
 
     // ---- Format choice box ----
     private void setupFormatChoiceBox() {
@@ -183,38 +184,38 @@ public class AudioConverterController {
     }
 
     // ---- Action column (per-file Cancel/Clear) ----
-    private void setupActionColumn() {
-        actionColumn.setCellFactory(_ -> new TableCell<>() {
-            private final Button cancelBtn = new Button("Cancel");
-            private final Button clearBtn = new Button("Delete");
+    // private void setupActionColumn() {
+    //     actionColumn.setCellFactory(_ -> new TableCell<>() {
+    //         private final Button cancelBtn = new Button("Cancel");
+    //         private final Button clearBtn = new Button("Delete");
 
-            {
-                cancelBtn.setOnAction(_ -> {
-                    FileInfo file = getTableView().getItems().get(getIndex());
-                    conversionManager.cancelConversion(file);
-                    file.setStatus("Cancelled");
-                });
+    //         {
+    //             cancelBtn.setOnAction(_ -> {
+    //                 FileInfo file = getTableView().getItems().get(getIndex());
+    //                 conversionManager.cancelConversion(file);
+    //                 file.setStatus("Cancelled");
+    //             });
 
-                clearBtn.setOnAction(_ -> {
-                    FileInfo file = getTableView().getItems().get(getIndex());
-                    getTableView().getItems().remove(file);
-                });
-            }
+    //             clearBtn.setOnAction(_ -> {
+    //                 FileInfo file = getTableView().getItems().get(getIndex());
+    //                 getTableView().getItems().remove(file);
+    //             });
+    //         }
 
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                setGraphic(empty ? null : new HBox(5, cancelBtn, clearBtn));
-            }
-        });
-    }
+    //         @Override
+    //         protected void updateItem(Void item, boolean empty) {
+    //             super.updateItem(item, empty);
+    //             setGraphic(empty ? null : new HBox(5, cancelBtn, clearBtn));
+    //         }
+    //     });
+    // }
 
     private void setupAudioSettings() {
         bitrateChoiceBox.setItems(FXCollections.observableArrayList("128k", "192k", "256k", "320k"));
         bitrateChoiceBox.setValue("192k");
 
-        sampleRateChoiceBox.setItems(FXCollections.observableArrayList("44100Hz", "48000Hz", "96000Hz"));
-        sampleRateChoiceBox.setValue("44100Hz");
+        sampleRateChoiceBox.setItems(FXCollections.observableArrayList("44100", "48000", "96000"));
+        sampleRateChoiceBox.setValue("44100");
 
         channelChoiceBox.setItems(FXCollections.observableArrayList("Mono", "Stereo"));
         channelChoiceBox.setValue("Stereo");
