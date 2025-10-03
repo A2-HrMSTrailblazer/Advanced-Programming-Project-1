@@ -8,15 +8,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import se233.audioconverterapp1.model.ConversionManager;
 import se233.audioconverterapp1.model.FileInfo;
-import se233.audioconverterapp1.util.FFmpegManager;
 import se233.audioconverterapp1.view.ThemeController;
-
-import java.io.File;
 
 public class AudioConverterController {
 
