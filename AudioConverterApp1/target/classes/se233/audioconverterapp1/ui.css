@@ -65,6 +65,10 @@
 }
 .button-primary:pressed { -fx-background-color: #2563eb; }
 
+.button-secondary{
+    -fx-background-color: yellow;
+}
+
 .button-danger {
     -fx-background-color: #ef4444;
     -fx-text-fill: white;

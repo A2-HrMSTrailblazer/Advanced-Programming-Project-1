@@ -49,23 +49,25 @@
     -fx-effect: dropshadow(three-pass-box, rgba(256,256,256,0.08), 8, 0, 0,2);
 }
 
-.btn:hover { -fx-opacity: 0.95; }
+.button:hover { -fx-opacity: 0.95; }
 
-.btn-primary {
-    -fx-background-color: #374151;
+.button-primary {
+    -fx-background-color: #3b82f6;
     -fx-text-fill: white;
 }
 
-.btn-secondary {
-    -fx-background-color: #374151;
-    -fx-text-fill: #f9fafb;
+.button-primary:pressed { -fx-background-color: #2563eb; }
+
+.button-secondary {
+    -fx-background-color: #eaf63b;
+    -fx-text-fill: #4b5563;
 }
 
-.btn-secondary:hover{
+.button-secondary:hover{
     -fx-background-color: #4b5563;
 }
 
-.btn-danger {
+.button-danger {
     -fx-background-color: #dc2626;
     -fx-text-fill: white;
 }

@@ -1,138 +1,118 @@
 package se233.audioconverterapp1.model;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import javafx.concurrent.Task;
 import se233.audioconverterapp1.util.FFmpegManager;
 import se233.audioconverterapp1.util.FFprobeHelper;
 
-/**
- * A background task to convert a single audio file.
- */
-public class ConversionTask extends Task<Void> {
+import java.io.*;
 
+public class ConversionTask extends Task<Void> {
     private final FileInfo fileInfo;
-    private final String targetFormat;
+    private final String outputFormat;
     private final String bitrate;
     private final String sampleRate;
     private final String channel;
-    private final File outputDirectory;
+    private final File outputDir;
 
-    private final Pattern TIME_PATTERN = Pattern.compile("time=(\\d+):(\\d+):(\\d+).(\\d+)");
-
-    public ConversionTask(FileInfo fileInfo, String targetFormat, String bitrate, String sampleRate, String channel, File outputDirectory) {
+    public ConversionTask(FileInfo fileInfo, String outputFormat, String bitrate, String sampleRate, String channel, File outputDir) {
         this.fileInfo = fileInfo;
-        this.targetFormat = targetFormat;
+        this.outputFormat = outputFormat;
         this.bitrate = bitrate;
         this.sampleRate = sampleRate;
         this.channel = channel;
-        this.outputDirectory = outputDirectory;
+        this.outputDir = outputDir;
     }
 
     @Override
-    protected Void call() throws Exception {
-        fileInfo.setProgress(0.0);
-        fileInfo.setStatus("Converting...");
-
-        String ffmpegPath = FFmpegManager.getFFmpegPath();
-        if (ffmpegPath == null || ffmpegPath.isBlank()) {
-            fileInfo.setStatus("FFmpeg not set");
-            return null;
-        }
-
-        // Input file
-        String inputPath = fileInfo.getFilePath();
-        File inputFile = new File(inputPath);
-
-        // Output file
-        String baseName = inputFile.getName().replaceFirst("[.][^.]+$", "");
-        String outputFormat = fileInfo.getTargetFormat();
-        File outputFile = new File(outputDirectory, baseName + "." + outputFormat);
-
+    protected Void call() {
         try {
-            List<String> command = new ArrayList<>();
-            command.add(ffmpegPath);
-            command.add("-y");
-            command.add("-hide_banner");
-            command.add("-stats");
-            command.add("-i");
-            command.add(inputFile.getAbsolutePath());
-            command.add("-vn");
+            fileInfo.setStatus("Converting...");
 
-            if (bitrate != null && !bitrate.isBlank()) {
-                command.add("-b:a");
-                command.add(bitrate);
+            String ffmpegPath = FFmpegManager.getFFmpegPath();
+            if (ffmpegPath == null) {
+                fileInfo.setStatus("FFmpeg not found");
+                return null;
             }
 
-            if (sampleRate != null && !sampleRate.isBlank()) {
-                command.add("-ar");
-                command.add(sampleRate);
+            File inputFile = new File(fileInfo.getFilePath());
+            File outputFile = new File(outputDir, getOutputName(inputFile, outputFormat));
+
+            double totalDuration = FFprobeHelper.getDurationSeconds(inputFile);
+            if (totalDuration <= 0) {
+                System.err.println("[FFmpeg] Could not detect duration, using fake progress.");
+                totalDuration = 1.0; // fallback to fake progress
             }
 
-            if (channel != null && !channel.isBlank()) {
-                String channelValue = channel.equalsIgnoreCase("Mono") ? "1" : "2";
-                command.add("-ac");
-                command.add(channelValue);
-            }
-
-            if ("m4a".equalsIgnoreCase(targetFormat)) {
-                command.add("-c:a");
-                command.add("aac");
-            }
-
-            command.add(outputFile.getAbsolutePath());
-
-            double totalSeconds = FFprobeHelper.getDurationSeconds(inputFile);
-            if (totalSeconds <= 0) {
-                // System.out.println("[FFmpeg] Could not detect duration, progress will be fake.");
-                totalSeconds = 1.0;
-            }
-
-            ProcessBuilder pb = new ProcessBuilder(command);
+            ProcessBuilder pb = new ProcessBuilder(
+                    ffmpegPath,
+                    "-y",
+                    "-i", inputFile.getAbsolutePath(),
+                    "-b:a", bitrate,
+                    "-ar", sampleRate,
+                    "-ac", channel.equalsIgnoreCase("mono") ? "1" : "2",
+                    outputFile.getAbsolutePath()
+            );
             pb.redirectErrorStream(true);
+
             Process process = pb.start();
 
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 String line;
+                double lastProgress = 0.0;
+
                 while ((line = reader.readLine()) != null) {
-                    System.out.println("[FFmpeg] " + line);
+                    if (isCancelled()) {
+                        process.destroyForcibly();
+                        fileInfo.setStatus("Cancelled");
+                        return null;
+                    }
 
-                    // Real time progress
-                    Matcher matcher = TIME_PATTERN.matcher(line);
-                    if (matcher.find()) {
-                        int h = Integer.parseInt(matcher.group(1));
-                        int m = Integer.parseInt(matcher.group(2));
-                        int s = Integer.parseInt(matcher.group(3));
-                        int ms = Integer.parseInt(matcher.group(4));
-
-                        double current = (h * 3600) + (m * 60) + s + (ms / 100.0);
-                        double progress = Math.min(1.0, current / totalSeconds);
-
+                    if (line.contains("time=")) {
+                        double currentTime = parseCurrentTime(line);
+                        double progress = Math.min(currentTime / totalDuration, 1.0);
+                        lastProgress = progress;
                         updateProgress(progress, 1.0);
                         fileInfo.setProgress(progress);
                     }
                 }
+
+                process.waitFor();
+
+                if (process.exitValue() == 0) {
+                    fileInfo.setStatus("Done");
+                    updateProgress(1.0, 1.0);
+                    fileInfo.setProgress(1.0);
+                } else {
+                    fileInfo.setStatus("Failed");
+                    updateProgress(lastProgress, 1.0);
+                }
             }
 
-            int exitCode = process.waitFor();
-            if (exitCode == 0) {
-                fileInfo.setStatus("Success");
-                fileInfo.setProgress(1.0);
-            }
-            else {
-                fileInfo.setStatus("Failed (exit " + exitCode + ")");
-            }
-        }
-        catch (Exception e){
-            fileInfo.setStatus("Failed");
-            throw e;
+        } catch (Exception e) {
+            fileInfo.setStatus("Error");
+            e.printStackTrace();
         }
         return null;
+    }
+
+    private String getOutputName(File inputFile, String format) {
+        String base = inputFile.getName().replaceFirst("[.][^.]+$", "");
+        return base + "." + format;
+    }
+
+    private double parseCurrentTime(String line) {
+        // Example: time=00:01:23.45
+        try {
+            int index = line.indexOf("time=");
+            if (index != -1) {
+                String timeStr = line.substring(index + 5, Math.min(index + 16, line.length()));
+                String[] parts = timeStr.split(":");
+                double hours = Double.parseDouble(parts[0]);
+                double minutes = Double.parseDouble(parts[1]);
+                double seconds = Double.parseDouble(parts[2]);
+                return hours * 3600 + minutes * 60 + seconds;
+            }
+        } catch (Exception ignored) {}
+        return 0.0;
     }
 }

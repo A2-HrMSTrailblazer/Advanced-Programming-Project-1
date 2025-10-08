@@ -65,7 +65,7 @@
 
                     <Pane HBox.hgrow="ALWAYS"/>
                     <Button fx:id="convertButton" text="Convert" styleClass="button-primary"/>
-                    <Button fx:id="cancelButton" text="Cancel"/>
+                    <Button fx:id="cancelButton" text="Cancel" styleClass="button-secondary" />
                     <Button fx:id="clearButton" text="Clear List" styleClass="button-danger"/>
                 </ToolBar>
 

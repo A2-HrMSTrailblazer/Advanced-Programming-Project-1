@@ -68,6 +68,7 @@ public class FileImportController {
                 getExtension(file),
                 formatSize(file.length() / 1024)
         );
+        
         fileConsumer.accept(fileInfo);
 
         dropContainer.setMinHeight(60);

@@ -107,6 +107,8 @@ public class MainContentController {
                 setGraphic(empty ? null : new HBox(5, cancelBtn, clearBtn));
             }
         });
+        cancelButton.getStyleClass().addAll("btn", "btn-secondary");
+        clearButton.getStyleClass().addAll("btn", "btn-danger");
     }
 
     private void applyGlobalFormat() {

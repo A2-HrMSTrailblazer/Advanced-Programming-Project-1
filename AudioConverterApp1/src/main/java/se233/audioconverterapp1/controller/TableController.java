@@ -87,6 +87,9 @@ public class TableController {
                     FileInfo file = getTableView().getItems().get(getIndex());
                     getTableView().getItems().remove(file);
                 });
+
+                cancelBtn.getStyleClass().addAll("button", "button-secondary");
+                clearBtn.getStyleClass().addAll("button", "button-danger");
             }
 
             @Override

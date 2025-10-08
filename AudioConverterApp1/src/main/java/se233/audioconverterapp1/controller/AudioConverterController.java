@@ -120,6 +120,9 @@ public class AudioConverterController {
         clearButton.setOnAction(_ -> conversionController.handleClear());
         cancelButton.setOnAction(_ -> conversionController.handleCancel());
         applyFormatButton.setOnAction(_ -> conversionController.applyGlobalFormat());
+
+        if (!cancelButton.getStyleClass().contains("button")) cancelButton.getStyleClass().addAll("button", "button-secondary");
+        if (!clearButton.getStyleClass().contains("button")) clearButton.getStyleClass().addAll("button", "button-danger");
     }
 
     private void setupAudioSettings() {
