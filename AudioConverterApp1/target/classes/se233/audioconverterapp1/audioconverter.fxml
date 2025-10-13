@@ -51,7 +51,7 @@
                 <ToolBar styleClass="topbar" prefWidth="Infinity">
                     <Label text="Output Format:"/>
                     <ChoiceBox fx:id="formatChoiceBox" prefWidth="120"/>
-                    <Button fx:id="applyFormatButton" text="Apply Global Format" styleClass="button-primary" />
+                    <Button fx:id="applyFormatButton" text="Apply to all" styleClass="button-primary" />
                     
                     <Label text="Bitrate:"/>
                     <ChoiceBox fx:id="bitrateChoiceBox" prefWidth="100"/>

@@ -3,25 +3,30 @@ package se233.audioconverterapp1.model;
 import javafx.beans.property.*;
 import java.io.File;
 
+// คลาสสำหรับเก็บข้อมูลไฟล์เสียงแต่ละไฟล์ในโปรแกรม
 public class FileInfo {
-    private final StringProperty fileName;
-    private final StringProperty filePath;
-    private final StringProperty format;
-    private final StringProperty size;
-    private final DoubleProperty progress;
-    private final StringProperty status;
-    private final StringProperty targetFormat;
+    // ประกาศ property สำหรับผูกกับ UI ได้โดยตรง
+    private final StringProperty fileName;       // ชื่อไฟล์ (เฉพาะชื่อ ไม่รวม path)
+    private final StringProperty filePath;       // ที่อยู่ไฟล์แบบเต็ม
+    private final StringProperty format;         // นามสกุลไฟล์ เช่น mp3, wav
+    private final StringProperty size;           // ขนาดไฟล์เป็นข้อความ
+    private final DoubleProperty progress;       // ความคืบหน้าในการแปลงไฟล์ (0.0 - 1.0)
+    private final StringProperty status;         // สถานะของไฟล์ (Pending, Converting, Done, Error)
+    private final StringProperty targetFormat;   // ฟอร์แมตเป้าหมายสำหรับแปลงไฟล์
 
+    // คอนสตรัคเตอร์ รับ path, format, ขนาดไฟล์ตอนสร้าง object
     public FileInfo(String filePath, String format, String size) {
         File file = new File(filePath);
-        this.filePath = new SimpleStringProperty(file.getAbsolutePath());
-        this.fileName = new SimpleStringProperty(file.getName()); // just display name
-        this.format = new SimpleStringProperty(format);
-        this.size = new SimpleStringProperty(size);
-        this.progress = new SimpleDoubleProperty(0.0);
-        this.status = new SimpleStringProperty("Pending");
-        this.targetFormat = new SimpleStringProperty("mp3");
+        this.filePath = new SimpleStringProperty(file.getAbsolutePath());    // กำหนด path ของไฟล์
+        this.fileName = new SimpleStringProperty(file.getName());            // กำหนดชื่อไฟล์
+        this.format = new SimpleStringProperty(format);                      // นามสกุลไฟล์
+        this.size = new SimpleStringProperty(size);                          // ขนาดไฟล์
+        this.progress = new SimpleDoubleProperty(0.0);                       // เริ่มต้น progress ที่ 0
+        this.status = new SimpleStringProperty("Pending");                   // สถานะเริ่มต้น Pending
+        this.targetFormat = new SimpleStringProperty("mp3");                 // ฟอร์แมตเป้าหมายเริ่มต้นเป็น mp3
     }
+
+    // --- Getter/Setter และ Property สำหรับเชื่อมต่อ UI ---
 
     public String getFilePath() { return filePath.get(); }
     @SuppressWarnings("exports")
