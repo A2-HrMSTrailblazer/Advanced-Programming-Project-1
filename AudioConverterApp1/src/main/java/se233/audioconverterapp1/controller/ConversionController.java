@@ -5,6 +5,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import se233.audioconverterapp1.exception.AppExceptionHandler;
+import se233.audioconverterapp1.exception.MissingFFmpegException;
 import se233.audioconverterapp1.model.ConversionManager;
 import se233.audioconverterapp1.model.FileInfo;
 import se233.audioconverterapp1.util.FFmpegManager;
@@ -55,8 +57,7 @@ public class ConversionController {
         try {
             // ตรวจสอบก่อนว่า FFmpeg พร้อมใช้งานหรือยัง
             if (!FFmpegManager.isFFmpegAvailable()) {
-                showFFmpegAlert();
-                return;
+                throw new MissingFFmpegException("FFmpeg is not configured. Please set the FFmpeg path.");
             }
 
             // ถ้าไม่มีไฟล์ให้ขึ้นแจ้งเตือน
@@ -103,25 +104,24 @@ public class ConversionController {
             showAlert("Started conversion of " + fileData.size() + " file(s).");
         } catch (Exception e) {
             // กรณีผิดพลาดจะแจ้งเตือน
-            showAlert("Conversion failed to start: " + e.getMessage());
-            e.printStackTrace();
+            AppExceptionHandler.handle(e);
         }
     }
 
     // ฟังก์ชันแสดงแจ้งเตือนหากยังไม่ได้ตั้งค่า FFmpeg
-    private void showFFmpegAlert() {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("FFmpeg Required");
-        alert.setHeaderText("FFmpeg is not configured");
-        alert.setContentText("You need to set the FFmpeg path before converting.");
+    // private void showFFmpegAlert() {
+    //     Alert alert = new Alert(Alert.AlertType.WARNING);
+    //     alert.setTitle("FFmpeg Required");
+    //     alert.setHeaderText("FFmpeg is not configured");
+    //     alert.setContentText("You need to set the FFmpeg path before converting.");
         
-        ButtonType okButton = new ButtonType("Set Path", ButtonBar.ButtonData.OK_DONE);
+    //     ButtonType okButton = new ButtonType("Set Path", ButtonBar.ButtonData.OK_DONE);
 
-        alert.getButtonTypes().setAll(okButton, ButtonType.CANCEL);
-        alert.showAndWait().ifPresent(response -> {
-            if (response == okButton) chooseFFmpegPath();
-        });
-    }
+    //     alert.getButtonTypes().setAll(okButton, ButtonType.CANCEL);
+    //     alert.showAndWait().ifPresent(response -> {
+    //         if (response == okButton) chooseFFmpegPath();
+    //     });
+    // }
 
     // ดึงนามสกุลไฟล์จากชื่อไฟล์
     private String getExtension(File file) {
@@ -168,16 +168,16 @@ public class ConversionController {
     }
 
     // เมธอดเลือกไฟล์ Exe สำหรับตั้งค่า FFmpeg
-    private void chooseFFmpegPath() {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("Select FFmpeg Executable");
-        chooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("FFmpeg Executable", "ffmpeg.exe", "ffmpeg"));
-        File file = chooser.showOpenDialog(fileTable.getScene().getWindow());
-        if (file != null) {
-            FFmpegManager.setFFmpegPath(file.getAbsolutePath());
-        }
-    }
+    // private void chooseFFmpegPath() {
+    //     FileChooser chooser = new FileChooser();
+    //     chooser.setTitle("Select FFmpeg Executable");
+    //     chooser.getExtensionFilters().add(
+    //             new FileChooser.ExtensionFilter("FFmpeg Executable", "ffmpeg.exe", "ffmpeg"));
+    //     File file = chooser.showOpenDialog(fileTable.getScene().getWindow());
+    //     if (file != null) {
+    //         FFmpegManager.setFFmpegPath(file.getAbsolutePath());
+    //     }
+    // }
 
     // เมธอดแสดงแจ้งเตือนทั่วไปจากข้อความ
     private void showAlert(String message) {

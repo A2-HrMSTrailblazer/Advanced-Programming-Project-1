@@ -9,6 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+import se233.audioconverterapp1.exception.AppExceptionHandler;
 import se233.audioconverterapp1.model.ConversionManager;
 import se233.audioconverterapp1.model.FileInfo;
 import se233.audioconverterapp1.view.ThemeController;
@@ -80,12 +81,15 @@ public class AudioConverterController {
     @FXML
     public void initialize() {
         // สร้างตัวควบคุมย่อยเพื่อแบ่งหน้าที่แต่ละส่วน
-        tableController = new TableController(fileTable, fileNameColumn, formatColumn, sizeColumn, progressColumn, statusColumn, targetFormatColumn, actionColumn, conversionManager);
+        tableController = new TableController(fileTable, fileNameColumn, formatColumn, sizeColumn, progressColumn,
+                statusColumn, targetFormatColumn, actionColumn, conversionManager);
         fileImportController = new FileImportController(dropContainer, dropZone, fileData::add, this::showConfigPanel);
         tableController.setupTable(fileData); // กำหนดตารางให้แสดงรายการไฟล์
         fileImportController.setupFileImport(); // ตั้งค่าการลากวางหรือนำเข้าไฟล์
         setupFormatChoiceBox(); // ตั้งค่าเมนูเลือกฟอร์แมตเบื้องต้น
-        conversionController = new ConversionController(fileTable, fileData, conversionManager, formatChoiceBox, bitrateChoiceBox, sampleRateChoiceBox, channelChoiceBox, overallProgress, overallProgressText, configPanel);
+        conversionController = new ConversionController(fileTable, fileData, conversionManager, formatChoiceBox,
+                bitrateChoiceBox, sampleRateChoiceBox, channelChoiceBox, overallProgress, overallProgressText,
+                configPanel);
         setupButtons(); // ตั้งค่าพฤติกรรมของปุ่มต่าง ๆ
         setupAudioSettings(); // ตั้งค่าเสียงเช่นบิตเรตและแซมเปิลเรต
 
@@ -117,14 +121,17 @@ public class AudioConverterController {
 
     // ตั้งค่าการทำงานของปุ่มต่าง ๆ
     private void setupButtons() {
-        convertButton.setOnAction(_ -> conversionController.handleConvert()); // เมื่อกดเริ่มแปลง
+        convertButton.setOnAction(_ -> conversionController.handleConvert());
+        // เมื่อกดเริ่มแปลง
         clearButton.setOnAction(_ -> conversionController.handleClear()); // เมื่อล้างรายการ
         cancelButton.setOnAction(_ -> conversionController.handleCancel()); // เมื่อต้องการยกเลิก
         applyFormatButton.setOnAction(_ -> conversionController.applyGlobalFormat()); // นำฟอร์แมตไปใช้กับทุกไฟล์
 
         // เพิ่มคลาสสไตล์ถ้ายังไม่มี เพื่อใช้ตกแต่งปุ่ม
-        if (!cancelButton.getStyleClass().contains("button")) cancelButton.getStyleClass().addAll("button", "button-secondary");
-        if (!clearButton.getStyleClass().contains("button")) clearButton.getStyleClass().addAll("button", "button-danger");
+        if (!cancelButton.getStyleClass().contains("button"))
+            cancelButton.getStyleClass().addAll("button", "button-secondary");
+        if (!clearButton.getStyleClass().contains("button"))
+            clearButton.getStyleClass().addAll("button", "button-danger");
     }
 
     // ตั้งค่าตัวเลือกเสียง เช่น บิตเรตและแซมเปิลเรต
